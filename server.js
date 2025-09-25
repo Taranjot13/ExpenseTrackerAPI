@@ -1,5 +1,4 @@
 // This file is the main entry point for the Expense Tracker API server.
-
 const express = require('express'); // Import Express framework
 const path = require('path'); // Import path module for handling file paths
 const mongoose = require('mongoose'); // Import Mongoose for MongoDB interaction
@@ -145,4 +144,5 @@ app.get('/blocking-nonblocking', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`); // Log server start message
 });
+
 
