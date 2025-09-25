@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>EXPENSE TRACKER API</title>
+</head>
+<body>
+    <!-- This file is the EJS template for the main view of the Expense Tracker application. -->
+    <% include partials/header %>
+    <form action="/post" method="POST">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="number" name="amount" placeholder="Amount" required>
+        <input type="text" name="category" placeholder="Category" required>
+        <input type="date" name="date" required>
+        <label>
+            <input type="checkbox" name="recurring"> Recurring
+        </label>
+        <button type="submit">Add Expense</button>
+    </form>
+    <h2>Expenses</h2>
+    <ul>
+        <% expenses.forEach(expense => { %>
+            <li><%= expense.title %> - $<%= expense.amount %> - <%= expense.category %> - <%= expense.date.toISOString().split('T')[0] %></li>
+        <% }); %>
+    </ul>
+    <% include partials/footer %>
+</body>
+</html>

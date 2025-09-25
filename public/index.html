@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXPENSE TRACKER API</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- This file is the main HTML page for the Expense Tracker application. -->
+    <div class="header">
+        <h1>EXPENSE TRACKER API</h1>
+    </div>
+    <div class="container">
+        <form id="expense-form">
+        <input type="text" id="title" placeholder="Title" required>
+        <input type="number" id="amount" placeholder="Amount" required>
+        <input type="text" id="category" placeholder="Category" required>
+        <input type="date" id="date" required>
+        <label>
+            <input type="checkbox" id="recurring"> Recurring
+        </label>
+        <button type="submit">Add Expense</button>
+    </form>
+    <h2>Search Expenses</h2>
+    <form id="search-form">
+        <input type="text" id="search-title" placeholder="Title">
+        <input type="text" id="search-category" placeholder="Category">
+        <input type="date" id="search-date">
+        <input type="number" id="min-amount" placeholder="Min Amount">
+        <input type="number" id="max-amount" placeholder="Max Amount">
+        <button type="submit">Search</button>
+    </form>
+        <h2>Expenses</h2>
+        <ul id="expense-list"></ul>
+        <button id="export-csv">Export as CSV</button>
+    </div>
+    <script src="script.js"></script>
+    <div class="footer">&copy; 2025 Expense Tracker &mdash; Built by Taranjot Singh</div>
+</body>
+</html>
