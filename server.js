@@ -1,5 +1,6 @@
 // This file is the main entry point for the Expense Tracker API server.
 const express = require('express'); // Import Express framework
+
 const path = require('path'); // Import path module for handling file paths
 const mongoose = require('mongoose'); // Import Mongoose for MongoDB interaction
 const session = require('express-session'); // Import express-session for session management
@@ -24,6 +25,7 @@ const upload = multer({ storage: storage });
 
 // Parse URL-encoded and JSON data
 app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded data
+
 app.use(express.json()); // Middleware to parse JSON data
 
 // Session management middleware
@@ -36,7 +38,9 @@ app.use(session({
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs'); // Set EJS as the view engine
+
 app.set('views', path.join(__dirname, 'views')); // Set the views directory
+
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from public/
 
 // Connect to MongoDB
@@ -144,5 +148,6 @@ app.get('/blocking-nonblocking', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`); // Log server start message
 });
+
 
 
