@@ -57,8 +57,9 @@ A comprehensive RESTful API for expense tracking with user authentication, real-
 
 - Node.js (v14 or higher) - **Required**
 - MongoDB (v4.4 or higher) - **Required**
+- Docker & Docker Compose - **Optional** (for Redis)
 - PostgreSQL (v12 or higher) - Optional (not needed for basic functionality)
-- Redis (v6 or higher) - Optional (not needed for basic functionality)
+- Redis (v6 or higher) - Optional (can be run via Docker)
 
 ## 🛠️ Installation
 
@@ -127,12 +128,27 @@ mongod
 net start MongoDB
 ```
 
-**Optional Databases (Not required for basic functionality):**
+**Optional Databases:**
 
-**Redis (for caching):**
+**Redis with Docker (Recommended for caching):**
+```bash
+# Start Redis container using Docker Compose
+docker-compose up -d redis
+
+# Verify Redis is running
+docker ps
+
+# View Redis logs
+docker-compose logs redis
+
+# Stop Redis
+docker-compose down
+```
+
+**Redis without Docker (Alternative):**
 ```bash
 redis-server
-# Uncomment REDIS_HOST in .env file
+# Make sure REDIS_HOST=localhost in .env file
 ```
 
 **PostgreSQL (for relational database features):**
@@ -161,13 +177,76 @@ npm start
 
 **Expected Output:**
 ```
-⏭️  Redis not configured - caching disabled
 🚀 Server running on port 5000 in development mode
 📡 WebSocket server is ready
 ✅ MongoDB Connected: localhost
+Redis Connected
+Redis Ready to use
 ```
 
 The server will start on `http://localhost:5000`
+
+## 🐳 Docker Setup
+
+This project includes Docker support for running Redis as a containerized service.
+
+### Docker Compose Configuration
+
+The `docker-compose.yml` file includes:
+- **Redis 7 Alpine** - Lightweight Redis instance
+- **Persistent Data** - Volume-mounted data storage
+- **Health Checks** - Automatic container health monitoring
+- **Auto-restart** - Automatic recovery on failure
+
+### Docker Commands
+
+**Start Redis Container:**
+```bash
+docker-compose up -d
+```
+
+**View Running Containers:**
+```bash
+docker ps
+```
+
+**View Redis Logs:**
+```bash
+docker-compose logs -f redis
+```
+
+**Stop Redis Container:**
+```bash
+docker-compose down
+```
+
+**Stop and Remove Data:**
+```bash
+docker-compose down -v
+```
+
+**Restart Redis:**
+```bash
+docker-compose restart redis
+```
+
+**Access Redis CLI:**
+```bash
+docker exec -it expense-tracker-redis redis-cli
+```
+
+### Verifying Redis Connection
+
+Once Redis is running via Docker, your application will automatically connect when you start the server. You should see:
+```
+Redis Connected
+Redis Ready to use
+```
+
+If Redis is not running, the application will continue without caching:
+```
+⏭️  Redis not configured - caching disabled
+```
 
 ## 🧪 Quick Test
 

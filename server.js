@@ -41,7 +41,7 @@ app.set('io', io);
 // Connect to databases
 connectMongoDB();
 // connectPostgreSQL(); // Optional: Disabled for MongoDB-only setup
-// connectRedis(); // Optional: Disabled - no caching needed
+connectRedis(); // Redis caching enabled
 
 // Middleware
 app.use(helmet()); // Security headers
