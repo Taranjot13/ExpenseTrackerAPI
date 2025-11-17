@@ -706,40 +706,43 @@ PORT=5001
 ```
 Expense-Tracker-API/
 ├── config/
-│   ├── mongodb.js          # MongoDB connection
-│   ├── redis.js            # Redis connection & utilities
-│   └── jwt.js              # JWT utilities
+│   ├── jwt.js              # JWT utilities
+│   ├── mongodb.js          # MongoDB connection & configuration
+│   └── redis.js            # Redis connection & cache utilities
 ├── controllers/
-│   ├── authController.js   # Authentication logic
-│   ├── expenseController.js # Expense CRUD
-│   ├── categoryController.js # Category CRUD
-│   └── analyticsController.js # Analytics logic
+│   ├── analyticsController.js # Analytics & reporting logic
+│   ├── authController.js   # Authentication & authorization
+│   ├── categoryController.js # Category CRUD operations
+│   └── expenseController.js # Expense CRUD operations
 ├── middleware/
-│   ├── authenticate.js     # JWT authentication
-│   ├── rateLimiter.js      # Rate limiting
-│   ├── cache.js            # Redis caching
-│   ├── errorHandler.js     # Error handling
-│   └── validator.js        # Input validation
+│   ├── authenticate.js     # JWT authentication middleware
+│   ├── cache.js            # Redis caching middleware
+│   ├── errorHandler.js     # Global error handling
+│   ├── rateLimiter.js      # API rate limiting
+│   └── validator.js        # Request validation (Joi)
 ├── models/
-│   ├── User.js             # User model
-│   ├── Expense.js          # Expense model
-│   └── Category.js         # Category model
+│   ├── Category.js         # Category schema (Mongoose)
+│   ├── Expense.js          # Expense schema (Mongoose)
+│   └── User.js             # User schema (Mongoose)
 ├── routes/
-│   ├── authRoutes.js       # Auth endpoints
-│   ├── expenseRoutes.js    # Expense endpoints
+│   ├── analyticsRoutes.js  # Analytics API endpoints
+│   ├── authRoutes.js       # Authentication endpoints
 │   ├── categoryRoutes.js   # Category endpoints
-│   └── analyticsRoutes.js  # Analytics endpoints
-├── .env.example            # Environment variables template
-├── .env                    # Your environment configuration (not in git)
-├── .gitignore              # Git ignore rules
-├── .dockerignore           # Docker ignore rules
-├── docker-compose.yml      # Docker Compose configuration for Redis
-├── package.json            # Dependencies
+│   └── expenseRoutes.js    # Expense endpoints
+├── utils/
+│   └── helpers.js          # Helper utility functions
+├── .dockerignore           # Docker ignore patterns
+├── .env                    # Environment variables (not in git)
+├── .env.example            # Environment template
+├── .gitignore              # Git ignore patterns
+├── docker-compose.yml      # Docker Compose for Redis
+├── package.json            # NPM dependencies & scripts
+├── package-lock.json       # NPM lock file
+├── postman_collection.json # Postman API collection
+├── README.md               # Project documentation
+├── redis-docker.ps1        # Redis Docker manager (PowerShell)
 ├── server.js               # Application entry point
-├── setup.ps1               # Setup script for Windows
-├── redis-docker.ps1        # Redis Docker management script
-├── README.md               # Documentation
-└── REDIS_DOCKER_SETUP.md   # Redis Docker setup guide
+└── setup.ps1               # Project setup script (PowerShell)
 ```
 
 ## 🚢 Deployment
