@@ -11,7 +11,6 @@ const xss = require('xss-clean');
 
 // Import configurations
 const { connectMongoDB } = require('./config/mongodb');
-const { connectPostgreSQL } = require('./config/postgresql');
 const { connectRedis } = require('./config/redis');
 const rateLimiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
@@ -40,8 +39,7 @@ app.set('io', io);
 
 // Connect to databases
 connectMongoDB();
-// connectPostgreSQL(); // Optional: Disabled for MongoDB-only setup
-connectRedis(); // Redis caching enabled
+connectRedis();
 
 // Middleware
 app.use(helmet()); // Security headers

@@ -5,7 +5,7 @@ let redisClient = null;
 const connectRedis = async () => {
   // Skip Redis if not configured
   if (!process.env.REDIS_HOST) {
-    console.log('Redis not configured - caching disabled');
+    console.log('⏭️  Redis not configured - caching disabled');
     return;
   }
 
@@ -20,26 +20,26 @@ const connectRedis = async () => {
     });
 
     redisClient.on('error', (err) => {
-      console.error('Redis Client Error:', err);
+      console.error('❌ Redis Client Error:', err);
     });
 
     redisClient.on('connect', () => {
-      console.log('Redis Connected');
+      console.log('🔗 Redis Connected');
     });
 
     redisClient.on('ready', () => {
-      console.log('Redis Ready to use');
+      console.log('✅ Redis Ready to use');
     });
 
     redisClient.on('end', () => {
-      console.log('Redis connection closed');
+      console.log('🔌 Redis connection closed');
     });
 
     await redisClient.connect();
 
   } catch (error) {
-    console.error('Redis connection failed:', error.message);
-    console.log('Continuing without Redis caching...');
+    console.error('❌ Redis connection failed:', error.message);
+    console.log('⏭️  Continuing without Redis caching...');
     // Don't exit process, allow app to run without Redis caching
   }
 };

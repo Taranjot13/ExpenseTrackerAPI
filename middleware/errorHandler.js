@@ -38,17 +38,6 @@ const errorHandler = (err, req, res, next) => {
     error.message = 'Token expired';
   }
 
-  // Sequelize errors
-  if (err.name === 'SequelizeValidationError') {
-    error.statusCode = 400;
-    error.message = err.errors.map(e => e.message).join(', ');
-  }
-
-  if (err.name === 'SequelizeUniqueConstraintError') {
-    error.statusCode = 400;
-    error.message = 'Duplicate entry';
-  }
-
   // Send error response
   res.status(error.statusCode).json({
     success: false,

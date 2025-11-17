@@ -94,14 +94,24 @@ Write-Host ""
 # Check Redis (optional)
 Write-Host "Checking Redis connection..." -ForegroundColor Yellow
 try {
-    $redisTest = redis-cli ping 2>&1
-    if ($redisTest -eq "PONG") {
-        Write-Host "✓ Redis is running (caching enabled)" -ForegroundColor Green
+    # Try checking Docker container first
+    $dockerRedis = docker ps --filter "name=expense-tracker-redis" --format "{{.Status}}" 2>$null
+    if ($dockerRedis -like "*Up*") {
+        Write-Host "✓ Redis is running via Docker (caching enabled)" -ForegroundColor Green
     } else {
-        Write-Host "⚠ Redis is not running (optional, caching disabled)" -ForegroundColor Yellow
+        # Check if Redis CLI is available locally
+        $redisTest = redis-cli ping 2>&1
+        if ($redisTest -eq "PONG") {
+            Write-Host "✓ Redis is running locally (caching enabled)" -ForegroundColor Green
+        } else {
+            Write-Host "⚠ Redis is not running (optional)" -ForegroundColor Yellow
+            Write-Host "  To start Redis with Docker: docker-compose up -d" -ForegroundColor Yellow
+            Write-Host "  Or use the management script: .\redis-docker.ps1" -ForegroundColor Yellow
+        }
     }
 } catch {
     Write-Host "⚠ Redis not found (optional, application will run without caching)" -ForegroundColor Yellow
+    Write-Host "  To set up Redis: docker-compose up -d" -ForegroundColor Yellow
 }
 
 Write-Host ""

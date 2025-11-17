@@ -34,9 +34,8 @@ A comprehensive RESTful API for expense tracking with user authentication, real-
   - User activity tracking
 
 - **Database Support**
-  - **MongoDB** - Primary NoSQL database for user data and expenses (Active)
-  - **PostgreSQL** - Optional relational database support (Code included for demonstration)
-  - **Redis** - Optional caching layer (Code included for demonstration)
+  - **MongoDB** - Primary NoSQL database for user data and expenses
+  - **Redis** - Caching layer for improved performance
 
 - **Security Features**
   - Helmet.js for secure HTTP headers
@@ -58,7 +57,6 @@ A comprehensive RESTful API for expense tracking with user authentication, real-
 - Node.js (v14 or higher) - **Required**
 - MongoDB (v4.4 or higher) - **Required**
 - Docker & Docker Compose - **Optional** (for Redis)
-- PostgreSQL (v12 or higher) - Optional (not needed for basic functionality)
 - Redis (v6 or higher) - Optional (can be run via Docker)
 
 ## 🛠️ Installation
@@ -89,20 +87,11 @@ NODE_ENV=development
 # MongoDB (Required)
 MONGODB_URI=mongodb://localhost:27017/expense_tracker
 
-# PostgreSQL (Optional - Disabled by default)
-# Uncomment below if you want to use PostgreSQL
-# POSTGRES_HOST=localhost
-# POSTGRES_PORT=5432
-# POSTGRES_USER=postgres
-# POSTGRES_PASSWORD=yourpassword
-# POSTGRES_DB=expense_tracker
-
-# Redis (Optional - Disabled by default)
-# Uncomment below if you want to use Redis caching
-# REDIS_HOST=localhost
-# REDIS_PORT=6379
-# REDIS_PASSWORD=
-# REDIS_DB=0
+# Redis (Optional - Docker Recommended)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
 
 # JWT
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
@@ -117,7 +106,7 @@ BCRYPT_ROUNDS=12
 CORS_ORIGIN=http://localhost:3000
 ```
 
-### 4. Start MongoDB
+### 4. Start Databases
 
 **MongoDB (Required):**
 ```bash
@@ -128,12 +117,10 @@ mongod
 net start MongoDB
 ```
 
-**Optional Databases:**
-
 **Redis with Docker (Recommended for caching):**
 ```bash
 # Start Redis container using Docker Compose
-docker-compose up -d redis
+docker-compose up -d
 
 # Verify Redis is running
 docker ps
@@ -148,15 +135,6 @@ docker-compose down
 **Redis without Docker (Alternative):**
 ```bash
 redis-server
-# Make sure REDIS_HOST=localhost in .env file
-```
-
-**PostgreSQL (for relational database features):**
-```bash
-# Start PostgreSQL service
-psql -U postgres
-CREATE DATABASE expense_tracker;
-# Uncomment POSTGRES_* variables in .env file
 ```
 
 ### 5. Run the application
@@ -726,10 +704,9 @@ PORT=5001
 ## 📁 Project Structure
 
 ```
-Expense-Tracker-Complete/
+Expense-Tracker-API/
 ├── config/
 │   ├── mongodb.js          # MongoDB connection
-│   ├── postgresql.js       # PostgreSQL connection
 │   ├── redis.js            # Redis connection & utilities
 │   └── jwt.js              # JWT utilities
 ├── controllers/
@@ -753,10 +730,16 @@ Expense-Tracker-Complete/
 │   ├── categoryRoutes.js   # Category endpoints
 │   └── analyticsRoutes.js  # Analytics endpoints
 ├── .env.example            # Environment variables template
+├── .env                    # Your environment configuration (not in git)
 ├── .gitignore              # Git ignore rules
+├── .dockerignore           # Docker ignore rules
+├── docker-compose.yml      # Docker Compose configuration for Redis
 ├── package.json            # Dependencies
 ├── server.js               # Application entry point
-└── README.md               # Documentation
+├── setup.ps1               # Setup script for Windows
+├── redis-docker.ps1        # Redis Docker management script
+├── README.md               # Documentation
+└── REDIS_DOCKER_SETUP.md   # Redis Docker setup guide
 ```
 
 ## 🚢 Deployment
@@ -771,8 +754,8 @@ Expense-Tracker-Complete/
 
 2. **Database**
    - Enable MongoDB authentication
-   - Set up PostgreSQL user permissions
    - Configure Redis password
+   - Set up database backups
 
 3. **Security**
    - Enable HTTPS/TLS

@@ -16,7 +16,7 @@ router.use(authenticate);
 
 // Category routes
 router.route('/')
-  .get(cacheMiddleware('categories', 300), getCategories) // Cache for 5 minutes
+  .get(cacheMiddleware('categories', 600), getCategories) // Cache for 10 minutes
   .post(validate(categorySchema), createCategory);
 
 router.route('/:id')
