@@ -55,17 +55,19 @@
 .expense-item {
     background: white;
     padding: 1.5rem;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 4px solid transparent;
 }
 
 .expense-item:hover {
-    transform: translateX(5px);
+    transform: translateX(8px) scale(1.01);
     box-shadow: var(--shadow-lg);
+    border-left-color: var(--primary-color);
 }
 
 .expense-info {
