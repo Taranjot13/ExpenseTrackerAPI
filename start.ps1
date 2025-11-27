@@ -53,6 +53,6 @@ Write-Host "To start the application:" -ForegroundColor Cyan
 Write-Host "  Development mode: npm run dev" -ForegroundColor White
 Write-Host "  Production mode:  npm start" -ForegroundColor White
 Write-Host ""
-Write-Host "📍 Application will be available at: http://localhost:5000" -ForegroundColor Cyan
+Write-Host "Application will be available at: http://localhost:5000" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "To stop services: docker-compose down" -ForegroundColor Gray
