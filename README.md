@@ -808,7 +808,7 @@ For support, email 65taranjot@gmail.com or create an issue in the repository.
 ## 🔗 Connect With Me
 💼 [LinkedIn](https://linkedin.com/in/taranjot13)  
 📂 [GitHub](https://github.com/Taranjot13)
-
+💼 [Email](65taranjot@gmail.com)
 
 ## 🙏 Acknowledgments
 
