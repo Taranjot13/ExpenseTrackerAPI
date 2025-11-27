@@ -1,6 +1,6 @@
 # Expense Tracker API
 
-A comprehensive RESTful API for expense tracking with user authentication, real-time updates, caching, and analytics.
+A comprehensive RESTful API for expense tracking with user authentication, real-time updates, caching, and analytics. Features a modern web interface for easy expense management.
 
 ## 🚀 Features
 
