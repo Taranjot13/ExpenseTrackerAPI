@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:7
+    container_name: expense-tracker-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: expense_tracker
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - expense-tracker-network
+
   redis:
     image: redis:7-alpine
     container_name: expense-tracker-redis
@@ -19,6 +37,8 @@ services:
       - expense-tracker-network
 
 volumes:
+  mongodb_data:
+    driver: local
   redis_data:
     driver: local
 
