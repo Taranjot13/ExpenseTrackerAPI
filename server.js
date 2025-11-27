@@ -8,18 +8,22 @@ const morgan = require('morgan');
 const compression = require('compression');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const cookieParser = require('cookie-parser');
+const path = require('path');
 
 // Import configurations
 const { connectMongoDB } = require('./config/mongodb');
 const { connectRedis } = require('./config/redis');
 const rateLimiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
+const { setUser } = require('./controllers/viewController');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const viewRoutes = require('./routes/viewRoutes');
 
 // Initialize Express app
 const app = express();
@@ -28,7 +32,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: '*', // Allow all origins for testing (change in production!)
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }
@@ -37,12 +41,18 @@ const io = socketIO(server, {
 // Make io accessible to routes
 app.set('io', io);
 
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // Connect to databases
 connectMongoDB();
 connectRedis();
 
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  contentSecurityPolicy: false // Disable for development; configure properly in production
+})); // Security headers
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true
@@ -51,10 +61,17 @@ app.use(compression()); // Compress responses
 app.use(morgan('dev')); // Logging
 app.use(express.json({ limit: '10mb' })); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser()); // Parse cookies
 app.use(mongoSanitize()); // Prevent NoSQL injection
 app.use(xss()); // Prevent XSS attacks
 
-// Rate limiting
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Set user for all views
+app.use(setUser);
+
+// Rate limiting for API routes only
 app.use('/api/', rateLimiter);
 
 // Health check endpoint
@@ -65,6 +82,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// View Routes (Frontend pages)
+app.use('/', viewRoutes);
 
 // API Routes
 app.use('/api/auth', authRoutes);

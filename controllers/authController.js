@@ -46,6 +46,16 @@ const register = async (req, res, next) => {
       user: user.toPublicJSON()
     });
 
+    // Set cookie for frontend if request is from form
+    if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+      res.cookie('token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      return res.redirect('/dashboard');
+    }
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -116,6 +126,16 @@ const login = async (req, res, next) => {
       message: 'Logged in successfully',
       timestamp: new Date()
     });
+
+    // Set cookie for frontend if request is from form
+    if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+      res.cookie('token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      return res.redirect('/dashboard');
+    }
 
     res.status(200).json({
       success: true,

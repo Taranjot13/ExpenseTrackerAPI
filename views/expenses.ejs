@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="main-content">
+        <div class="expenses-container">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-receipt"></i> Expenses
+                </h1>
+        <a href="/expenses/new" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Expense
+        </a>
+    </div>
+    
+    <div class="filters-section">
+        <div class="filters-grid">
+            <div class="form-group">
+                <label for="filterCategory">
+                    <i class="fas fa-filter"></i> Category
+                </label>
+                <select id="filterCategory" class="form-control">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="filterStartDate">
+                    <i class="fas fa-calendar"></i> Start Date
+                </label>
+                <input type="date" id="filterStartDate" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="filterEndDate">
+                    <i class="fas fa-calendar"></i> End Date
+                </label>
+                <input type="date" id="filterEndDate" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="filterSort">
+                    <i class="fas fa-sort"></i> Sort By
+                </label>
+                <select id="filterSort" class="form-control">
+                    <option value="-date">Date (Newest)</option>
+                    <option value="date">Date (Oldest)</option>
+                    <option value="-amount">Amount (High to Low)</option>
+                    <option value="amount">Amount (Low to High)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filter-actions">
+            <button id="applyFilters" class="btn btn-primary">
+                <i class="fas fa-search"></i> Apply Filters
+            </button>
+            <button id="clearFilters" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Clear
+            </button>
+        </div>
+    </div>
+    
+    <div class="expenses-list" id="expensesList">
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading expenses...
+        </div>
+    </div>
+    
+    <div class="pagination" id="pagination"></div>
+        </div>
+    </main>
+    
+    <%- include('partials/footer') %>
+    
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/expenses.js"></script>
+</body>
+</html>

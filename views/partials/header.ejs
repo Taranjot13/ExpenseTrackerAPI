@@ -1,0 +1,40 @@
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <span>Expense Tracker</span>
+            </div>
+            
+            <% if (typeof user !== 'undefined' && user) { %>
+                <nav class="nav">
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="/expenses" class="nav-link">
+                        <i class="fas fa-receipt"></i> Expenses
+                    </a>
+                    <a href="/categories" class="nav-link">
+                        <i class="fas fa-tags"></i> Categories
+                    </a>
+                    <a href="/analytics" class="nav-link">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                    <div class="user-menu">
+                        <span class="user-name">
+                            <i class="fas fa-user-circle"></i> <%= user.username || user.email %>
+                        </span>
+                        <a href="/logout" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </nav>
+            <% } else { %>
+                <nav class="nav">
+                    <a href="/login" class="btn btn-primary">Login</a>
+                    <a href="/register" class="btn btn-secondary">Register</a>
+                </nav>
+            <% } %>
+        </div>
+    </div>
+</header>

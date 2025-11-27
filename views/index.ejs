@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="main-content">
+        <div class="home-container">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1>
+                        <i class="fas fa-wallet"></i>
+                        Expense Tracker
+                    </h1>
+                    <p class="hero-subtitle">
+                        Take control of your finances. Track, analyze, and manage your expenses with ease.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="/register" class="btn btn-primary btn-lg">
+                            <i class="fas fa-rocket"></i> Get Started
+                        </a>
+                        <a href="/login" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h2>Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Secure & Private</h3>
+                        <p>Your data is encrypted and protected with industry-standard security.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Analytics Dashboard</h3>
+                        <p>Visualize your spending patterns with detailed charts and reports.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-tags"></i>
+                        <h3>Custom Categories</h3>
+                        <p>Organize expenses with custom categories and track budgets.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Real-time Updates</h3>
+                        <p>Get instant notifications with WebSocket technology.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Responsive Design</h3>
+                        <p>Access your expenses from any device, anywhere.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-cloud"></i>
+                        <h3>Cloud Sync</h3>
+                        <p>Your data is always backed up and accessible.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <%- include('partials/footer') %>
+    
+    <script src="/js/main.js"></script>
+</body>
+</html>

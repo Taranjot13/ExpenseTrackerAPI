@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="main-content">
+        <div class="analytics-container">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </h1>
+        <div class="period-selector">
+            <button class="period-btn active" data-period="week">
+                <i class="fas fa-calendar-week"></i> Week
+            </button>
+            <button class="period-btn" data-period="month">
+                <i class="fas fa-calendar-alt"></i> Month
+            </button>
+            <button class="period-btn" data-period="year">
+                <i class="fas fa-calendar"></i> Year
+            </button>
+            <button class="period-btn" data-period="custom">
+                <i class="fas fa-calendar-day"></i> Custom
+            </button>
+        </div>
+    </div>
+    
+    <div id="customDateRange" class="custom-date-range" style="display: none;">
+        <div class="date-inputs">
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" class="form-control">
+            </div>
+            <button id="applyCustomRange" class="btn btn-primary">Apply</button>
+        </div>
+    </div>
+    
+    <div class="analytics-stats">
+        <div class="stat-card">
+            <i class="fas fa-coins"></i>
+            <div>
+                <h3>Total Spending</h3>
+                <p class="stat-value" id="totalSpending">$0.00</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <i class="fas fa-calculator"></i>
+            <div>
+                <h3>Average Daily</h3>
+                <p class="stat-value" id="avgDaily">$0.00</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <i class="fas fa-arrow-up"></i>
+            <div>
+                <h3>Highest Expense</h3>
+                <p class="stat-value" id="highestExpense">$0.00</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <i class="fas fa-hashtag"></i>
+            <div>
+                <h3>Total Transactions</h3>
+                <p class="stat-value" id="totalTransactions">0</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h2>
+                <i class="fas fa-chart-line"></i> Spending Trend
+            </h2>
+            <canvas id="trendChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <h2>
+                <i class="fas fa-chart-pie"></i> Category Distribution
+            </h2>
+            <canvas id="categoryPieChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <h2>
+                <i class="fas fa-chart-bar"></i> Top Categories
+            </h2>
+            <canvas id="topCategoriesChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <h2>
+                <i class="fas fa-bullseye"></i> Budget vs Actual
+            </h2>
+            <canvas id="budgetChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="insights-section">
+        <h2>
+            <i class="fas fa-lightbulb"></i> Spending Insights
+        </h2>
+        <div id="insightsList" class="insights-list">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Analyzing your spending...
+            </div>
+        </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
+
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/js/analytics.js"></script>
+</body>
+</html>
