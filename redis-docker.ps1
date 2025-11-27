@@ -1,3 +1,4 @@
+
 # Redis Docker Setup Script for Expense Tracker API
 # This script helps you quickly manage the Redis Docker container
 
