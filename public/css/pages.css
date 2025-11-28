@@ -533,3 +533,75 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Users Page */
+.users-stats {
+    margin-bottom: 2rem;
+}
+
+.users-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.user-card {
+    background: var(--light-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.user-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+    background: white;
+}
+
+.user-avatar {
+    flex-shrink: 0;
+}
+
+.user-avatar i {
+    font-size: 4rem;
+    color: var(--primary-color);
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.user-email,
+.user-name,
+.user-joined {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-email i,
+.user-name i,
+.user-joined i {
+    width: 16px;
+    color: var(--primary-color);
+}

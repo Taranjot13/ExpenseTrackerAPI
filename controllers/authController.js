@@ -317,6 +317,25 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+// @desc    Get all users (for admin view)
+// @route   GET /api/auth/users
+// @access  Private
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find()
+      .select('username email firstName lastName createdAt')
+      .sort('-createdAt');
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -324,5 +343,6 @@ module.exports = {
   logout,
   getProfile,
   updateProfile,
-  changePassword
+  changePassword,
+  getAllUsers
 };

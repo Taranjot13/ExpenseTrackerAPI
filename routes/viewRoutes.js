@@ -15,6 +15,7 @@ router.get('/expenses/new', viewController.requireAuth, viewController.getNewExp
 router.get('/expenses/edit/:id', viewController.requireAuth, viewController.getEditExpense);
 router.get('/categories', viewController.requireAuth, viewController.getCategories);
 router.get('/analytics', viewController.requireAuth, viewController.getAnalytics);
+router.get('/users', viewController.requireAuth, viewController.getUsers);
 router.get('/logout', viewController.logout);
 
 module.exports = router;

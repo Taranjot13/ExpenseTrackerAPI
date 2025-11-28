@@ -7,7 +7,8 @@ const {
   logout,
   getProfile,
   updateProfile,
-  changePassword
+  changePassword,
+  getAllUsers
 } = require('../controllers/authController');
 const authenticate = require('../middleware/authenticate');
 const { validate, registerSchema, loginSchema } = require('../middleware/validator');
@@ -23,5 +24,6 @@ router.post('/logout', authenticate, logout);
 router.get('/me', authenticate, getProfile);
 router.put('/profile', authenticate, updateProfile);
 router.put('/password', authenticate, changePassword);
+router.get('/users', authenticate, getAllUsers);
 
 module.exports = router;

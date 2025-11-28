@@ -113,6 +113,13 @@ exports.getAnalytics = (req, res) => {
     });
 };
 
+// Users list (admin view)
+exports.getUsers = (req, res) => {
+    res.render('users', {
+        title: 'Registered Users - Expense Tracker'
+    });
+};
+
 // Logout
 exports.logout = (req, res) => {
     res.clearCookie('token');
