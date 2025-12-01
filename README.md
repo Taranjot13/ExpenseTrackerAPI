@@ -234,7 +234,35 @@ After starting the server, test if it's working:
 2. **Or follow the guide**: See `POSTMAN_GUIDE.md` for step-by-step testing
 3. **First endpoint to test**: Register a user at `POST http://localhost:5000/api/auth/register`
 
+## 🖥️ CLI Report Tool (Syllabus: Async & CLI Apps)
+
+This project includes a Node.js CLI tool to generate expense reports, covering `process.argv`, async programming and file handling:
+
+- Command: `npm run cli:report -- --email=user@example.com [--month=YYYY-MM]`
+- Output: JSON report under `reports/` with totals and category-wise breakdown.
+
 ## 📚 API Documentation
+
+## 📈 Database Indexing & Scaling (Syllabus: Scaling DBs)
+
+- MongoDB compound indexes on `Expense`:
+  - `{ user: 1, date: -1 }` for user + date range queries.
+  - `{ user: 1, category: 1 }` for category-wise analytics per user.
+- In production, the `expenses` collection can be sharded by `user` and replicated for high availability.
+
+## 🗄️ Relational DB (PostgreSQL) Demo (Syllabus: PostgreSQL & MariaDB)
+
+- Schema example in `utils/postgres-schema.sql` mirroring users, categories and expenses.
+- Connectivity demo:
+  - Command: `npm run pg:demo`
+  - Uses `PG_CONNECTION_STRING` (e.g. `postgres://postgres:postgres@localhost:5432/expensetracker`).
+
+## ☁️ Deployment Overview (Syllabus: AWS, Docker, Beanstalk)
+
+- **Docker**: Run Redis via `docker-compose.yml`; the Node.js API can be containerized similarly.
+- **AWS EC2**: Host the API on an EC2 instance, connect to MongoDB Atlas and Redis (or AWS ElastiCache).
+- **AWS RDS**: Optionally host the relational schema for reporting.
+- **AWS S3 & Route 53**: Use S3 for static assets/backups and Route 53 for DNS to your EC2/Beanstalk environment.
 
 ### Base URL
 ```
