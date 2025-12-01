@@ -61,7 +61,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send({
         name: 'Food & Dining',
-        icon: '🍔',
+        icon: 'food',
         color: '#FF6B6B',
         budget: 500
       })
@@ -75,7 +75,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send({
         name: 'Transportation',
-        icon: '🚗',
+        icon: 'car',
         color: '#4ECDC4',
         budget: 300
       })
@@ -281,7 +281,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
 
     expect(logoutResponse.body.success).toBe(true);
 
-    console.log('✅ Complete functional test passed!');
+    console.log('[Success] Complete functional test passed!');
   });
 
   test('Error handling workflow - Invalid operations', async () => {
@@ -371,7 +371,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       .set('Authorization', `Bearer ${user1Token}`)
       .send({
         name: 'User1 Category',
-        icon: '📂'
+        icon: 'folder'
       })
       .expect(201);
 
@@ -413,6 +413,6 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
 
     expect(unauthorizedAccess.body.success).toBe(false);
 
-    console.log('✅ Data isolation verified!');
+    console.log('[Success] Data isolation verified!');
   });
 });

@@ -10,14 +10,13 @@ const {
 } = require('../controllers/expenseController');
 const authenticate = require('../middleware/authenticate');
 const { validate, expenseSchema } = require('../middleware/validator');
-const cacheMiddleware = require('../middleware/cache');
 
 // All routes are protected
 router.use(authenticate);
 
 // Expense routes
 router.route('/')
-  .get(cacheMiddleware('expenses', 300), getExpenses) // Cache for 5 minutes
+  .get(getExpenses)
   .post(validate(expenseSchema), createExpense);
 
 router.route('/:id')

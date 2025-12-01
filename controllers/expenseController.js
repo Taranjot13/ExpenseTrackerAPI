@@ -1,6 +1,6 @@
 const Expense = require('../models/Expense');
 const Category = require('../models/Category');
-const { deleteCachePattern } = require('../config/redis');
+const { syncExpense, deleteExpense: deletePgExpense } = require('../utils/postgresSync');
 
 // @desc    Create new expense
 // @route   POST /api/expenses
@@ -40,9 +40,8 @@ const createExpense = async (req, res, next) => {
     // Populate category details
     await expense.populate('category', 'name color icon');
 
-    // Clear cache for this user
-    await deleteCachePattern(`expenses:${req.user._id}:*`);
-    await deleteCachePattern(`analytics:${req.user._id}:*`);
+    // Sync to PostgreSQL (if available)
+    await syncExpense(expense, req.user._id);
 
     // Send WebSocket notification
     const io = req.app.get('io');
@@ -202,10 +201,6 @@ const updateExpense = async (req, res, next) => {
     await expense.save();
     await expense.populate('category', 'name color icon');
 
-    // Clear cache
-    await deleteCachePattern(`expenses:${req.user._id}:*`);
-    await deleteCachePattern(`analytics:${req.user._id}:*`);
-
     // Send WebSocket notification
     const io = req.app.get('io');
     io.to(`user_${req.user._id}`).emit('expense_updated', {
@@ -240,10 +235,6 @@ const deleteExpense = async (req, res, next) => {
         message: 'Expense not found'
       });
     }
-
-    // Clear cache
-    await deleteCachePattern(`expenses:${req.user._id}:*`);
-    await deleteCachePattern(`analytics:${req.user._id}:*`);
 
     // Send WebSocket notification
     const io = req.app.get('io');
@@ -280,10 +271,6 @@ const bulkDeleteExpenses = async (req, res, next) => {
       _id: { $in: expenseIds },
       user: req.user._id
     });
-
-    // Clear cache
-    await deleteCachePattern(`expenses:${req.user._id}:*`);
-    await deleteCachePattern(`analytics:${req.user._id}:*`);
 
     // Send WebSocket notification
     const io = req.app.get('io');

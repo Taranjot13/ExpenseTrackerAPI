@@ -9,14 +9,13 @@ const {
 } = require('../controllers/categoryController');
 const authenticate = require('../middleware/authenticate');
 const { validate, categorySchema } = require('../middleware/validator');
-const cacheMiddleware = require('../middleware/cache');
 
 // All routes are protected
 router.use(authenticate);
 
 // Category routes
 router.route('/')
-  .get(cacheMiddleware('categories', 300), getCategories) // Cache for 5 minutes
+  .get(getCategories)
   .post(validate(categorySchema), createCategory);
 
 router.route('/:id')

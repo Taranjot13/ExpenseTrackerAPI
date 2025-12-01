@@ -1,7 +1,6 @@
 
 require('dotenv').config();
 const express = require('express');
-const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -14,7 +13,8 @@ const path = require('path');
 
 // Import configurations
 const { connectMongoDB } = require('./config/mongodb');
-const { connectRedis } = require('./config/redis');
+const { connectPostgres } = require('./config/postgres');
+const { createSecureServer, getServerInfo } = require('./config/https');
 const rateLimiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const { setUser } = require('./controllers/viewController');
@@ -24,11 +24,14 @@ const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const postgresRoutes = require('./routes/postgresRoutes');
+const externalApiRoutes = require('./routes/externalApiRoutes');
 const viewRoutes = require('./routes/viewRoutes');
 
 // Initialize Express app
 const app = express();
-const server = http.createServer(app);
+// Create HTTP or HTTPS server based on SSL availability
+const server = createSecureServer(app);
 
 // Initialize Socket.IO
 const io = socketIO(server, {
@@ -48,7 +51,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Connect to databases
 connectMongoDB();
-connectRedis();
+connectPostgres();
 
 // Middleware
 app.use(helmet({
@@ -92,6 +95,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/postgres', postgresRoutes);
+app.use('/api/external', externalApiRoutes);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
@@ -121,8 +126,15 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`📡 WebSocket server is ready`);
+  const serverInfo = getServerInfo(server);
+  console.log(`[Server] ${serverInfo.protocol.toUpperCase()} server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`[Server] HTTPS: ${serverInfo.httpsEnabled ? 'Enabled' : 'Disabled'}`);
+  console.log(`[WebSocket] WebSocket server is ready`);
+  
+  if (!serverInfo.httpsEnabled && process.env.NODE_ENV === 'production') {
+    console.warn('[Security Warning] HTTPS is not enabled in production mode!');
+    console.warn('[Security Warning] Run "npm run generate:ssl" to create SSL certificates.');
+  }
 });
 
 // Handle unhandled promise rejections

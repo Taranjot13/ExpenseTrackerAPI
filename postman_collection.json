@@ -242,7 +242,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Food & Dining\",\n  \"color\": \"#FF5733\",\n  \"icon\": \"🍔\",\n  \"budget\": 500,\n  \"description\": \"All food and dining expenses\"\n}"
+              "raw": "{\n  \"name\": \"Food & Dining\",\n  \"color\": \"#FF5733\",\n  \"icon\": \"food\",\n  \"budget\": 500,\n  \"description\": \"All food and dining expenses\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/categories",

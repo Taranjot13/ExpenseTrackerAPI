@@ -1,6 +1,6 @@
 const Category = require('../models/Category');
 const Expense = require('../models/Expense');
-const { deleteCachePattern } = require('../config/redis');
+const { syncCategory, deleteCategory: deletePgCategory } = require('../utils/postgresSync');
 
 // @desc    Create new category
 // @route   POST /api/categories
@@ -32,8 +32,8 @@ const createCategory = async (req, res, next) => {
       description
     });
 
-    // Clear cache
-    await deleteCachePattern(`categories:${req.user._id}:*`);
+    // Sync to PostgreSQL (if available)
+    await syncCategory(category, req.user._id);
 
     // Send WebSocket notification
     const io = req.app.get('io');
@@ -208,10 +208,6 @@ const updateCategory = async (req, res, next) => {
 
     await category.save();
 
-    // Clear cache
-    await deleteCachePattern(`categories:${req.user._id}:*`);
-    await deleteCachePattern(`expenses:${req.user._id}:*`);
-
     // Send WebSocket notification
     const io = req.app.get('io');
     io.to(`user_${req.user._id}`).emit('category_updated', {
@@ -260,9 +256,6 @@ const deleteCategory = async (req, res, next) => {
     }
 
     await category.deleteOne();
-
-    // Clear cache
-    await deleteCachePattern(`categories:${req.user._id}:*`);
 
     // Send WebSocket notification
     const io = req.app.get('io');

@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../config/jwt');
-const { deleteCache, deleteCachePattern } = require('../config/redis');
+const { syncUser } = require('../utils/postgresSync');
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -38,6 +38,9 @@ const register = async (req, res, next) => {
     // Save refresh token to database
     user.refreshToken = refreshToken;
     await user.save();
+
+    // Sync to PostgreSQL (if available)
+    await syncUser(user);
 
     // Send WebSocket notification
     const io = req.app.get('io');
@@ -116,9 +119,6 @@ const login = async (req, res, next) => {
     // Save refresh token
     user.refreshToken = refreshToken;
     await user.save();
-
-    // Clear user cache
-    await deleteCachePattern(`*:${user._id}:*`);
 
     // Send WebSocket notification
     const io = req.app.get('io');
@@ -206,9 +206,6 @@ const logout = async (req, res, next) => {
     user.refreshToken = null;
     await user.save();
 
-    // Clear user cache
-    await deleteCachePattern(`*:${user._id}:*`);
-
     // Send WebSocket notification
     const io = req.app.get('io');
     io.to(`user_${user._id}`).emit('user_logged_out', {
@@ -253,9 +250,6 @@ const updateProfile = async (req, res, next) => {
     if (currency !== undefined) user.currency = currency;
 
     await user.save();
-
-    // Clear user cache
-    await deleteCachePattern(`*:${user._id}:*`);
 
     res.status(200).json({
       success: true,

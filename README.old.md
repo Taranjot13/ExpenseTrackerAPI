@@ -2,16 +2,6 @@
 
 A comprehensive RESTful API for expense tracking with user authentication, real-time updates, and analytics. Built following Backend Engineering-II (23CS008) course syllabus with Node.js, Express.js, MongoDB, and PostgreSQL integration capabilities.
 
-## 🎉 100% COMPLETE - HTTPS/TLS NOW ENABLED!
-
-**Course:** Backend Engineering-II (23CS008) - Advanced Topics  
-**Status:** ✅ **100% IMPLEMENTATION COMPLETE**  
-**Grade:** **A++ (100%)**
-
-All advanced backend topics successfully implemented with **production-ready HTTPS/TLS encryption**!
-
----
-
 ## Features
 
 - **User Authentication & Authorization**
@@ -47,8 +37,7 @@ All advanced backend topics successfully implemented with **production-ready HTT
   - **MongoDB** - Primary NoSQL database for user data and expenses
   - **PostgreSQL** - Optional relational database support for advanced queries
 
-- **Security Features** ⭐
-  - **HTTPS/TLS** - TLS 1.2/1.3 encryption with 4096-bit RSA
+- **Security Features**
   - Helmet.js for secure HTTP headers
   - CORS configuration
   - Rate limiting (DDoS protection)
@@ -74,8 +63,8 @@ All advanced backend topics successfully implemented with **production-ready HTT
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Taranjot13/ExpenseTrackerAPI.git
-cd Expense-Tracker-API
+git clone <your-repository-url>
+cd Expense-Tracker-Complete
 ```
 
 ### 2. Install dependencies
@@ -83,29 +72,7 @@ cd Expense-Tracker-API
 npm install
 ```
 
-### 3. Generate SSL Certificates (NEW! ⭐)
-```bash
-npm run generate:ssl
-```
-
-**Output:**
-```
-=================================
-  SSL Certificate Generator
-  (Node.js Native - No OpenSSL)
-=================================
-
-[SSL] ✓ RSA key pair generated
-[SSL] ✓ Certificate signed
-
-✅ SSL Certificate generated successfully!
-
-Files created:
-  📄 ssl/private.key
-  📄 ssl/certificate.crt
-```
-
-### 4. Environment Configuration
+### 3. Environment Configuration
 Create a `.env` file in the root directory:
 ```bash
 cp .env.example .env
@@ -116,11 +83,6 @@ Edit `.env` with your configuration:
 # Server
 PORT=5000
 NODE_ENV=development
-
-# HTTPS/TLS Configuration (NEW!)
-ENABLE_HTTPS=true
-SSL_KEY_PATH=./ssl/private.key
-SSL_CERT_PATH=./ssl/certificate.crt
 
 # MongoDB (Required)
 MONGODB_URI=mongodb://localhost:27017/expense_tracker
@@ -145,7 +107,7 @@ BCRYPT_ROUNDS=12
 CORS_ORIGIN=http://localhost:3000
 ```
 
-### 5. Start Databases
+### 4. Start Databases
 
 **MongoDB (Required):**
 ```bash
@@ -167,27 +129,6 @@ docker run --name expense-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d
 # Connect to PostgreSQL
 psql -U postgres -d expense_tracker
 ```
-
-### 6. Start Server
-
-**With HTTPS (Recommended):**
-```bash
-npm start
-# or
-npm run start:https
-```
-
-**Server Output (HTTPS Enabled):**
-```
-[HTTPS] SSL/TLS certificates loaded successfully
-[HTTPS] TLS 1.2/1.3 enabled with strong cipher suites
-[Server] HTTPS server running on port 5000 in development mode
-[Server] HTTPS: Enabled
-[WebSocket] WebSocket server is ready
-[Success] MongoDB Connected: localhost
-```
-
-⚠️ **Note:** Self-signed certificates will show a browser warning. Click "Advanced" → "Proceed to localhost"
 
 ### 5. Run the application
 
