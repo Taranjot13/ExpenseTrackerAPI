@@ -9,9 +9,17 @@
     "dev": "nodemon server.js",
     "generate:ssl": "node utils/generate-ssl-nodejs.js",
     "cli:report": "node utils/cli-report.js",
+    "setup:replication": "node utils/setup-replication.js",
+    "docker:replication": "docker-compose -f docker-compose.replication.yml up -d",
+    "docker:stop": "docker-compose -f docker-compose.replication.yml down",
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand",
+    "test:functional": "jest tests/functional --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --runInBand",
     "test:api": "node utils/test-external-api.js",
-    "test:esm": "node utils/esmExample.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:esm": "node utils/esmExample.mjs"
   },
   "keywords": [
     "expense-tracker",
@@ -41,11 +49,15 @@
     "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
     "pg": "^8.13.0",
-    "socket.io": "^4.6.0",
+    "redis": "^4.6.0",
+    "socket.io": "^4.8.1",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^9.1.3",
     "node-forge": "^1.3.2",
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
   }
 }

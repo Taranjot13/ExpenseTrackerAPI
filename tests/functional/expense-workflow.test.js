@@ -7,25 +7,35 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const app = require('../../server');
 const User = require('../../models/User');
 const Category = require('../../models/Category');
 const Expense = require('../../models/Expense');
 
 let mongoServer;
-let server;
+let app;
 
 beforeAll(async () => {
+  // Close any existing mongoose connections
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+  
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
-  server = app.listen(0);
+  
+  // Import app after setting up test database
+  const server = require('../../server');
+  app = server.app;
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-  await server.close();
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 afterEach(async () => {
@@ -51,7 +61,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       .expect(201);
 
     expect(registerResponse.body.success).toBe(true);
-    const authToken = registerResponse.body.data.token;
+    const authToken = registerResponse.body.data.accessToken;
     const userId = registerResponse.body.data.user._id;
 
     // Step 2: Create Categories
@@ -295,7 +305,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       })
       .expect(201);
 
-    const authToken = registerResponse.body.data.token;
+    const authToken = registerResponse.body.data.accessToken;
 
     // Try to create expense without category
     const invalidExpense = await request(app)
@@ -351,7 +361,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       })
       .expect(201);
 
-    const user1Token = user1Response.body.data.token;
+    const user1Token = user1Response.body.data.accessToken;
 
     // Register User 2
     const user2Response = await request(app)
@@ -363,7 +373,7 @@ describe('Expense Management Functional Tests - Complete User Journey', () => {
       })
       .expect(201);
 
-    const user2Token = user2Response.body.data.token;
+    const user2Token = user2Response.body.data.accessToken;
 
     // User 1 creates category and expense
     const user1Category = await request(app)

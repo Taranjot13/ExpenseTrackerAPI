@@ -7,27 +7,35 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const app = require('../../server');
 const User = require('../../models/User');
 
 let mongoServer;
-let server;
+let app;
 
 // Setup: Connect to in-memory MongoDB and start server
 beforeAll(async () => {
+  // Close any existing mongoose connections
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+  
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
   
-  // Create test server instance
-  server = app.listen(0); // Use random port
+  // Import app after setting up test database
+  const server = require('../../server');
+  app = server.app;
 });
 
 // Cleanup: Disconnect and stop MongoDB
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-  await server.close();
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 // Clear database after each test
@@ -56,7 +64,7 @@ describe('Authentication API Integration Tests', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.username).toBe(userData.username);
       expect(response.body.data.user.email).toBe(userData.email);
-      expect(response.body.data.token).toBeDefined();
+      expect(response.body.data.accessToken).toBeDefined();
       expect(response.body.data.refreshToken).toBeDefined();
     });
 
@@ -160,7 +168,7 @@ describe('Authentication API Integration Tests', () => {
 
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.email).toBe('login@example.com');
-      expect(response.body.data.token).toBeDefined();
+      expect(response.body.data.accessToken).toBeDefined();
       expect(response.body.data.refreshToken).toBeDefined();
     });
 
@@ -216,7 +224,7 @@ describe('Authentication API Integration Tests', () => {
           lastName: 'Test'
         });
       
-      authToken = response.body.data.token;
+      authToken = response.body.data.accessToken;
     });
 
     test('should get user profile with valid token', async () => {
@@ -261,7 +269,7 @@ describe('Authentication API Integration Tests', () => {
           password: 'password123'
         });
       
-      authToken = response.body.data.token;
+      authToken = response.body.data.accessToken;
     });
 
     test('should update user profile', async () => {
@@ -320,7 +328,7 @@ describe('Authentication API Integration Tests', () => {
         .expect(200);
 
       expect(response.body.success).toBe(true);
-      expect(response.body.data.token).toBeDefined();
+      expect(response.body.data.accessToken).toBeDefined();
       expect(response.body.data.refreshToken).toBeDefined();
     });
 
@@ -346,7 +354,7 @@ describe('Authentication API Integration Tests', () => {
           password: 'password123'
         });
       
-      authToken = response.body.data.token;
+      authToken = response.body.data.accessToken;
     });
 
     test('should logout successfully', async () => {

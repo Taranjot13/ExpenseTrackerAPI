@@ -1,8 +1,62 @@
-node_modules
-npm-debug.log
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
 .env
-.git
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Git
+.git/
 .gitignore
+
+# Documentation
+*.md
+docs/
+
+# Test files
+tests/
+*.test.js
+*.spec.js
+
+# Development files
+nodemon.json
+.prettierrc
+.eslintrc*
+
+# Temporary files
+tmp/
+temp/
+
+# Reports
+reports/
+
+# Old files
+*.old.*
+README.old.md
+
 README.md
 .vscode
 .idea

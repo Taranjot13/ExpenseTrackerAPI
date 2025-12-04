@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Node.js Application (Development)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: expense-tracker-api-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/expense_tracker
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=expense_tracker
+      - JWT_SECRET=dev-jwt-secret-key
+      - JWT_REFRESH_SECRET=dev-refresh-secret-key
+      - ENABLE_HTTPS=false
+    depends_on:
+      - mongodb
+      - postgres
+    networks:
+      - expense-tracker-network
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./ssl:/app/ssl
+    command: npm run dev
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: expense-tracker-mongodb-dev
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: expense_tracker
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - expense-tracker-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: expense-tracker-postgres-dev
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: expense_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - expense-tracker-network
+
+volumes:
+  mongodb_data_dev:
+  postgres_data_dev:
+
+networks:
+  expense-tracker-network:
+    driver: bridge

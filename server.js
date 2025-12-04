@@ -1,7 +1,7 @@
 
 require('dotenv').config();
 const express = require('express');
-const socketIO = require('socket.io');
+const { init: initWebSocket } = require('./config/websocket');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -14,6 +14,7 @@ const path = require('path');
 // Import configurations
 const { connectMongoDB } = require('./config/mongodb');
 const { connectPostgres } = require('./config/postgres');
+const { connectRedis } = require('./config/redis');
 const { createSecureServer, getServerInfo } = require('./config/https');
 const rateLimiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
@@ -33,14 +34,8 @@ const app = express();
 // Create HTTP or HTTPS server based on SSL availability
 const server = createSecureServer(app);
 
-// Initialize Socket.IO
-const io = socketIO(server, {
-  cors: {
-    origin: '*', // Allow all origins for testing (change in production!)
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-  }
-});
+// Initialize WebSocket
+const io = initWebSocket(server);
 
 // Make io accessible to routes
 app.set('io', io);
@@ -52,6 +47,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Connect to databases
 connectMongoDB();
 connectPostgres();
+connectRedis(); // Connect to Redis for caching
 
 // Middleware
 app.use(helmet({
@@ -87,16 +83,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// View Routes (Frontend pages)
-app.use('/', viewRoutes);
-
-// API Routes
+// API Routes (must come before view routes!)
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/postgres', postgresRoutes);
 app.use('/api/external', externalApiRoutes);
+
+// View Routes (Frontend pages) - MUST BE LAST because it has wildcard
+app.use('/', viewRoutes);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
@@ -123,30 +119,32 @@ app.use((req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Start server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  const serverInfo = getServerInfo(server);
-  console.log(`[Server] ${serverInfo.protocol.toUpperCase()} server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`[Server] HTTPS: ${serverInfo.httpsEnabled ? 'Enabled' : 'Disabled'}`);
-  console.log(`[WebSocket] WebSocket server is ready`);
-  
-  if (!serverInfo.httpsEnabled && process.env.NODE_ENV === 'production') {
-    console.warn('[Security Warning] HTTPS is not enabled in production mode!');
-    console.warn('[Security Warning] Run "npm run generate:ssl" to create SSL certificates.');
-  }
-});
+// Start server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, () => {
+    const serverInfo = getServerInfo(server);
+    console.log(`[Server] ${serverInfo.protocol.toUpperCase()} server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+    console.log(`[Server] HTTPS: ${serverInfo.httpsEnabled ? 'Enabled' : 'Disabled'}`);
+    console.log(`[WebSocket] WebSocket server is ready`);
+    
+    if (!serverInfo.httpsEnabled && process.env.NODE_ENV === 'production') {
+      console.warn('[Security Warning] HTTPS is not enabled in production mode!');
+      console.warn('[Security Warning] Run "npm run generate:ssl" to create SSL certificates.');
+    }
+  });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
-  server.close(() => process.exit(1));
-});
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err);
+    server.close(() => process.exit(1));
+  });
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    process.exit(1);
+  });
+}
 
 module.exports = { app, io };

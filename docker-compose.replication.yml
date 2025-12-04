@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  # Redis Cache Server
+  redis:
+    image: redis:7-alpine
+    container_name: expense-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispass123}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - expense-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Primary
+  mongo-primary:
+    image: mongo:8.0
+    container_name: mongo-primary
+    command: mongod --replSet expenseTrackerRS --port 27017 --bind_ip_all
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password123}
+      MONGO_INITDB_DATABASE: expense_tracker
+    volumes:
+      - mongo-primary-data:/data/db
+      - mongo-primary-config:/data/configdb
+    networks:
+      - expense-network
+    restart: unless-stopped
+
+  # MongoDB Secondary 1
+  mongo-secondary1:
+    image: mongo:8.0
+    container_name: mongo-secondary1
+    command: mongod --replSet expenseTrackerRS --port 27017 --bind_ip_all
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password123}
+    volumes:
+      - mongo-secondary1-data:/data/db
+      - mongo-secondary1-config:/data/configdb
+    networks:
+      - expense-network
+    depends_on:
+      - mongo-primary
+    restart: unless-stopped
+
+  # MongoDB Secondary 2
+  mongo-secondary2:
+    image: mongo:8.0
+    container_name: mongo-secondary2
+    command: mongod --replSet expenseTrackerRS --port 27017 --bind_ip_all
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password123}
+    volumes:
+      - mongo-secondary2-data:/data/db
+      - mongo-secondary2-config:/data/configdb
+    networks:
+      - expense-network
+    depends_on:
+      - mongo-primary
+    restart: unless-stopped
+
+  # PostgreSQL (Optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: expense-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: expense_tracker
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - expense-network
+    restart: unless-stopped
+
+  # Expense Tracker API
+  api:
+    build: .
+    container_name: expense-api
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo-primary:27017,mongo-secondary1:27017,mongo-secondary2:27017/expense_tracker?replicaSet=expenseTrackerRS
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redispass123}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: expense_tracker
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_key}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_refresh_secret_key}
+    depends_on:
+      - mongo-primary
+      - mongo-secondary1
+      - mongo-secondary2
+      - redis
+      - postgres
+    networks:
+      - expense-network
+    restart: unless-stopped
+    volumes:
+      - ./ssl:/app/ssl
+
+volumes:
+  redis-data:
+  mongo-primary-data:
+  mongo-primary-config:
+  mongo-secondary1-data:
+  mongo-secondary1-config:
+  mongo-secondary2-data:
+  mongo-secondary2-config:
+  postgres-data:
+
+networks:
+  expense-network:
+    driver: bridge

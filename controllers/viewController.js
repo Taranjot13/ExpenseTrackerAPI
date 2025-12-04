@@ -45,8 +45,8 @@ exports.setUser = (req, res, next) => {
 
 // Home page
 exports.getHome = (req, res) => {
-    res.render('index', {
-        title: 'Home - Expense Tracker'
+    res.render('index-new', {
+        title: 'Home'
     });
 };
 
@@ -55,8 +55,8 @@ exports.getLogin = (req, res) => {
     if (req.cookies.token) {
         return res.redirect('/dashboard');
     }
-    res.render('login', {
-        title: 'Login - Expense Tracker'
+    res.render('login-new', {
+        title: 'Login'
     });
 };
 
@@ -65,15 +65,15 @@ exports.getRegister = (req, res) => {
     if (req.cookies.token) {
         return res.redirect('/dashboard');
     }
-    res.render('register', {
-        title: 'Register - Expense Tracker'
+    res.render('register-new', {
+        title: 'Register'
     });
 };
 
 // Dashboard
 exports.getDashboard = (req, res) => {
-    res.render('dashboard', {
-        title: 'Dashboard - Expense Tracker'
+    res.render('dashboard-new', {
+        title: 'Dashboard'
     });
 };
 
