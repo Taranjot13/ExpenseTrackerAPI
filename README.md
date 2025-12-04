@@ -1,14 +1,101 @@
 # Expense Tracker API
 
-A comprehensive RESTful API for expense tracking with user authentication, real-time updates, and analytics. Built following Backend Engineering-II (23CS008) course syllabus with Node.js, Express.js, MongoDB, and PostgreSQL integration capabilities.
+A comprehensive, production-ready RESTful API for expense tracking, featuring JWT authentication, real-time updates via WebSockets, and advanced analytics. This project is fully containerized with Docker and includes support for MongoDB, PostgreSQL, and Redis.
 
-## 🎉 100% COMPLETE - HTTPS/TLS NOW ENABLED!
+---
 
-**Course:** Backend Engineering-II (23CS008) - Advanced Topics  
-**Status:** ✅ **100% IMPLEMENTATION COMPLETE**  
-**Grade:** **A++ (100%)**
+## ✨ Key Features
 
-All advanced backend topics successfully implemented with **production-ready HTTPS/TLS encryption**!
+- **Secure Authentication**: JWT-based authentication with access/refresh tokens and secure password hashing using `bcryptjs`.
+- **Full-Stack Application**: Includes a Node.js/Express backend and a React frontend.
+- **Real-Time Updates**: WebSocket integration with `socket.io` for instant client updates.
+- **Comprehensive Expense Management**: Full CRUD operations for expenses and categories.
+- **Advanced Analytics**: Endpoints for spending summaries, category breakdowns, and budget comparisons.
+- **Multi-Database Support**:
+    - **MongoDB**: Primary NoSQL database for core data.
+    - **PostgreSQL**: Optional relational database for complex queries.
+    - **Redis**: Server-side caching for high-performance data retrieval.
+- **Containerized Environment**: Fully orchestrated with Docker and Docker Compose for easy setup and deployment.
+- **Robust Security**: Implements `helmet` for security headers, `express-mongo-sanitize` to prevent NoSQL injection, and rate limiting.
+- **Comprehensive Testing**: Includes a full testing suite with Jest for unit, integration, and functional tests.
+
+---
+
+## 🛠️ Technologies Used
+
+- **Backend**: Node.js, Express.js
+- **Frontend**: React
+- **Databases**: MongoDB, PostgreSQL, Redis
+- **Authentication**: JWT (JSON Web Tokens), bcryptjs
+- **Real-time**: WebSockets (Socket.IO)
+- **Containerization**: Docker, Docker Compose
+- **Testing**: Jest
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
+- [Node.js](https://nodejs.org/) (v14 or later) for local development (optional).
+
+### Quick Start with Docker
+
+This is the recommended way to run the entire application stack.
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Taranjot13/ExpenseTrackerAPI.git
+    cd ExpenseTrackerAPI
+    ```
+
+2.  **Build and run the services**:
+    ```bash
+    docker-compose up --build
+    ```
+
+3.  **Access the applications**:
+    -   **Frontend (React App)**: [http://localhost:3000](http://localhost:3000)
+    -   **Backend API**: [http://localhost:5000](http://localhost:5000)
+
+The application is now running! The backend API, frontend client, MongoDB, PostgreSQL, and Redis are all running in their respective Docker containers.
+
+---
+
+## ⚙️ API Endpoints
+
+Here is a brief overview of the available API endpoints. For a complete list, you can refer to the route files in the `routes/` directory.
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Register a new user. |
+| `POST` | `/api/auth/login` | Log in a user and receive a JWT. |
+| `GET` | `/api/expenses` | Get all expenses for the authenticated user. |
+| `POST` | `/api/expenses` | Create a new expense. |
+| `GET` | `/api/categories` | Get all categories for the user. |
+| `GET` | `/api/analytics/summary` | Get a summary of expenses. |
+
+---
+
+## 🧪 Running Tests
+
+This project uses Jest for testing. The tests are structured into `unit`, `integration`, and `functional` tests.
+
+To run the tests, you can execute the following command:
+
+```bash
+npm test
+```
+
+This will run all tests and provide a coverage report.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or find a bug.
+
 
 ---
 
