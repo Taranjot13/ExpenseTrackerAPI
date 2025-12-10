@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const { register, isAuthenticated, error } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     password2: '',
   });
+  const [alert, setAlert] = useState('');
+
 
   const { name, email, password, password2 } = formData;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,20 +28,17 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
-      console.log('Passwords do not match');
+      setAlert('Passwords do not match');
     } else {
-      try {
-        const res = await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
-        console.log(res.data);
-        // Handle successful registration, e.g., redirect to login
-      } catch (err) {
-        console.error(err.response.data);
-      }
+      await register({ name, email, password });
     }
   };
 
   return (
     <form onSubmit={onSubmit}>
+      <h2>Register</h2>
+      {alert && <p className="error">{alert}</p>}
+      {error && <p className="error">{error}</p>}
       <div>
         <input
           type="text"

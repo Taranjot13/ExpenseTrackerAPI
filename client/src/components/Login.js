@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const { login, isAuthenticated, error } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -9,22 +12,24 @@ const Login = () => {
 
   const { email, password } = formData;
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
-      console.log(res.data);
-      // Handle successful login, e.g., save token, redirect
-    } catch (err) {
-      console.error(err.response.data);
-    }
+    await login(formData);
   };
 
   return (
     <form onSubmit={onSubmit}>
+      <h2>Login</h2>
+      {error && <p className="error">{error}</p>}
       <div>
         <input
           type="email"

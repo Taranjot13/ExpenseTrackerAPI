@@ -35,14 +35,18 @@ A comprehensive, production-ready RESTful API for expense tracking, featuring JW
 
 ## 🚀 Getting Started
 
+This project can be run locally without Docker, which is recommended for systems with limited memory. Docker is the recommended approach for production deployment.
+
 ### Prerequisites
 
-- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
-- [Node.js](https://nodejs.org/) (v14 or later) for local development (optional).
+- [Node.js](https://nodejs.org/) (v14 or later)
+- Local installations of [MongoDB](https://www.mongodb.com/try/download/community), [PostgreSQL](https://www.postgresql.org/download/), and [Redis](https://redis.io/docs/getting-started/installation/).
 
-### Quick Start with Docker
+---
 
-This is the recommended way to run the entire application stack.
+### A. Local Development Setup (Without Docker)
+
+This approach gives you granular control over each service. You will need to run the databases, backend, and frontend in separate terminals.
 
 1.  **Clone the repository**:
     ```bash
@@ -50,16 +54,71 @@ This is the recommended way to run the entire application stack.
     cd ExpenseTrackerAPI
     ```
 
-2.  **Build and run the services**:
+2.  **Install Backend Dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Install Frontend Dependencies**:
+    ```bash
+    cd client
+    npm install
+    cd ..
+    ```
+
+4.  **Set Up Environment Variables**:
+    Create a `.env` file in the root directory and configure it with your local database connections and secrets.
+    ```env
+    # Server
+    NODE_ENV=development
+    PORT=5000
+
+    # Database Connections
+    MONGODB_URI=mongodb://localhost:27017/expense_tracker
+    POSTGRES_HOST=localhost
+    POSTGRES_USER=postgres
+    POSTGRES_PASSWORD=your_postgres_password
+    POSTGRES_DB=expense_tracker
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+
+    # JWT Secrets
+    JWT_SECRET=your-super-secret-key
+    JWT_REFRESH_SECRET=your-super-secret-refresh-key
+    ```
+
+5.  **Start Your Databases**:
+    Ensure your local MongoDB, PostgreSQL, and Redis services are running.
+
+6.  **Run the Backend Server**:
+    In the root directory, run:
+    ```bash
+    npm start
+    ```
+    The backend API will be available at `http://localhost:5000`.
+
+7.  **Run the Frontend Application**:
+    In a new terminal, navigate to the `client` directory and run:
+    ```bash
+    cd client
+    npm start
+    ```
+    The frontend will be available at `http://localhost:3000`.
+
+---
+
+### B. Deployment with Docker
+
+This is the recommended method for production or for users with sufficient system resources. It automatically builds and runs the entire application stack.
+
+1.  **Ensure Docker is running**, then execute the following command from the root directory:
     ```bash
     docker-compose up --build
     ```
 
-3.  **Access the applications**:
+2.  **Access the applications**:
     -   **Frontend (React App)**: [http://localhost:3000](http://localhost:3000)
     -   **Backend API**: [http://localhost:5000](http://localhost:5000)
-
-The application is now running! The backend API, frontend client, MongoDB, PostgreSQL, and Redis are all running in their respective Docker containers.
 
 ---
 
