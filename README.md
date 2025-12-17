@@ -386,3 +386,23 @@ ISC — see [package.json](package.json)
 ---
 
 Maintained by the Expense Tracker team. Contributions welcome via pull requests.
+
+## 👨‍💻 About the Developer
+
+**Taranjot Singh**
+- 💼 LinkedIn: https://www.linkedin.com/in/taranjot13
+- 📧 Email: 65taranjot@gmail.com
+- 🐙 GitHub: https://github.com/Taranjot13
+
+## 📞 Contact
+
+For any questions or feedback, please reach out:
+- Email: 65taranjot@gmail.com
+- LinkedIn: https://www.linkedin.com/in/taranjot13
+- Project Link: https://github.com/Taranjot13/smart-task-scheduler
+
+---
+
+⭐ If you found this project helpful, please give it a star on GitHub!
+
+**Built with ❤️ and ☕ by Taranjot Singh**
