@@ -67,6 +67,128 @@ Data persistence
 - Docker setup: [docker](docker)
 - Tests: [tests](tests)
 
+## Project Structure
+
+```
+ExpenseTrackerAPI/
+│
+├── ecosystem.config.js                # PM2 process definition for production
+├── jest.config.js                     # Jest configuration for tests
+├── package.json                       # Backend dependencies and scripts
+├── postman_collection.json            # API collection for manual testing
+├── server.js                          # Express app entry (HTTP/HTTPS, Socket.IO)
+├── setup.ps1                          # Windows setup helper
+├── start-dev.js                       # Dev helper (if used with nodemon/concurrently)
+├── start.ps1                          # Windows start helper
+│
+├── client/                            # React client (CRA)
+│   ├── package.json                   # Client dependencies and scripts
+│   ├── public/
+│   │   ├── index.html                 # Client HTML template
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   └── src/
+│       ├── App.css
+│       ├── App.js                     # Root React component
+│       ├── App.test.js                # Client tests
+│       ├── index.css
+│       ├── index.js                   # Client entry
+│       ├── reportWebVitals.js
+│       ├── setupTests.js
+│       ├── components/
+│       │   ├── Dashboard.js
+│       │   ├── Home.js
+│       │   ├── Layout.js
+│       │   ├── Login.js
+│       │   ├── PrivateRoute.js
+│       │   ├── Register.js
+│       │   └── TopNav.js
+│       ├── context/
+│       │   └── AuthContext.js         # Auth state/context
+│       └── utils/
+│           └── api.js                 # Axios instance for API calls
+│
+├── config/                            # Backend configuration modules
+│   ├── https.js                       # HTTP/HTTPS server factory, SSL handling
+│   ├── jwt.js                         # JWT token helpers
+│   ├── mongodb.js                     # MongoDB connection with retry/fail-fast
+│   ├── postgres.js                    # Optional PostgreSQL pool and schema init
+│   ├── redis.js                       # Optional Redis client + cache helpers
+│   └── websocket.js                   # Socket.IO initialization
+│
+├── controllers/                       # Route handlers (business logic)
+│   ├── analyticsController.js
+│   ├── authController.js
+│   ├── categoryController.js
+│   ├── expenseController.js
+│   └── viewController.js              # EJS view helpers
+│
+├── docker/                            # Containerization
+│   ├── docker-compose.dev.yml         # Dev compose (live-reload API)
+│   ├── docker-compose.replication.yml # Replication support scripts
+│   ├── docker-compose.yml             # Prod-like compose (API, DBs, client)
+│   ├── api/
+│   │   └── Dockerfile                 # API image
+│   └── client/
+│       └── Dockerfile                 # Client image
+│
+├── middleware/                        # Express middlewares
+│   ├── authenticate.js
+│   ├── cache.js
+│   ├── errorHandler.js
+│   ├── rateLimiter.js
+│   └── validator.js
+│
+├── models/                            # Mongoose models
+│   ├── Category.js
+│   ├── Expense.js
+│   └── User.js
+│
+├── pics/                              # Screenshots for documentation
+│   └── *.png
+│
+├── public/                            # Server-rendered static assets
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── app.js
+│
+├── routes/                            # API and view routes
+│   ├── analyticsRoutes.js
+│   ├── authRoutes.js
+│   ├── categoryRoutes.js
+│   ├── expenseRoutes.js
+│   ├── externalApiRoutes.js
+│   ├── postgresRoutes.js
+│   └── viewRoutes.js
+│
+├── tests/                             # Jest test suites
+│   ├── setup.js                       # Test env bootstrap
+│   ├── functional/
+│   │   └── expense-workflow.test.js
+│   ├── integration/
+│   │   └── auth.test.js
+│   └── unit/
+│       └── user.test.js
+│
+├── utils/                             # Utilities and scripts
+│   ├── categoryRoutes.js
+│   ├── cli-report.js                  # CLI env/dep report
+│   ├── esmExample.mjs
+│   ├── externalApi.js
+│   ├── generate-ssl-nodejs.js         # Local SSL generator
+│   ├── generate-ssl.js
+│   ├── helpers.js
+│   ├── kill-port.js
+│   ├── postgresSync.js
+│   ├── reset-mongo.js
+│   ├── setup-replication.js
+│   └── test-external-api.js
+│
+└── views/                             # EJS templates for server-rendered pages
+  └── index.ejs
+```
+
 ## Environment Variables
 
 Create a `.env` file at the project root as needed. Common variables:
