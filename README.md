@@ -377,6 +377,57 @@ After starting the server, test if it's working:
 2. **First endpoint to test**: Register a user at `POST http://localhost:5000/api/auth/register`
 3. **Web Interface**: Open `http://localhost:5000` in your browser for the EJS-powered frontend
 
+---
+
+## 📸 Screenshots
+
+Below are key screens and flows of the application. All screenshots are stored under `pics/`.
+
+> Tip: If viewing on GitHub, click images to zoom.
+
+### Authentication
+
+#### Register
+![Register](pics/Register%20tab.png)
+
+#### Login
+![Login](pics/login%20tab.png)
+
+### Dashboards & Core Flows
+
+#### Main Dashboard
+![Dashboard](pics/dashboard.png)
+
+#### Dashboard After Creating Categories and Expenses
+![Dashboard After Data](pics/dashboard%20after%20creating%20expenses%20and%20category.png)
+
+#### Create Category (Dashboard)
+![Create Category - Dashboard](pics/create%20category%20dashboard.png)
+
+#### Creating Category (Form)
+![Creating Category - Form](pics/creating%20category.png)
+
+#### Create Expense (Dashboard)
+![Create Expense - Dashboard](pics/create%20expense%20dashboard.png)
+
+#### Creating Expense (Form)
+![Creating Expense - Form](pics/creating%20expense.png)
+
+### Analytics
+
+#### Analytics Dashboard
+![Analytics Dashboard](pics/annalytics%20dashboard.png)
+
+### Profile
+
+#### Profile Dashboard (View Profile)
+![Profile Dashboard](pics/progile%20dashboard%20for%20viewing%20profile.png)
+
+### Data Layer
+
+#### MongoDB – Data Saved
+![MongoDB Data Saved](pics/data%20saved%20in%20mongodb.png)
+
 ## Course Syllabus Coverage (23CS008 - Backend Engineering-II)
 
 This project implements key concepts from the Backend Engineering-II syllabus:

@@ -159,14 +159,14 @@ if (process.env.NODE_ENV !== 'test') {
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Rejection:', err);
-    server.close(() => process.exit(1));
+    console.error('[Process] Unhandled Rejection:', err);
+    // Do NOT exit; keep the server running to avoid blank site.
   });
 
   // Handle uncaught exceptions
   process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-    process.exit(1);
+    console.error('[Process] Uncaught Exception:', err);
+    // Do NOT exit; keep the server running to avoid blank site.
   });
 }
 
