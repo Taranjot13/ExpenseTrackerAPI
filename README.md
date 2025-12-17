@@ -28,29 +28,43 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 
 ## Screenshots
 
-Login and registration
+A quick visual tour of the app. Each screenshot is indexed and captioned for clarity.
 
-![Login](pics/login%20tab.png)
-![Register](pics/Register%20tab.png)
+1) **Login** — _Authenticate with email/password_
 
-Dashboard views
+![01 – Login](pics/login%20tab.png)
 
-![Dashboard](pics/dashboard.png)
-![After Creating Data](pics/dashboard%20after%20creating%20expenses%20and%20category.png)
+2) **Register** — _Create a new account_
 
-Create flows
+![02 – Register](pics/Register%20tab.png)
 
-![Create Category](pics/create%20category%20dashboard.png)
-![Create Expense](pics/create%20expense%20dashboard.png)
+3) **Dashboard (Overview)** — _See totals, categories, and recent activity_
 
-Analytics and profile
+![03 – Dashboard](pics/dashboard.png)
 
-![Analytics Dashboard](pics/annalytics%20dashboard.png)
-![Profile Dashboard](pics/progile%20dashboard%20for%20viewing%20profile.png)
+4) **Dashboard (After Creating Data)** — _Updated widgets and recent items_
 
-Data persistence
+![04 – Dashboard After Create](pics/dashboard%20after%20creating%20expenses%20and%20category.png)
 
-![MongoDB Data](pics/data%20saved%20in%20mongodb.png)
+5) **Create Category** — _Add a new spending category_
+
+![05 – Create Category](pics/create%20category%20dashboard.png)
+
+6) **Create Expense** — _Add an expense with category and details_
+
+![06 – Create Expense](pics/create%20expense%20dashboard.png)
+
+7) **Analytics Dashboard** — _Trends and summaries across time_
+
+![07 – Analytics Dashboard](pics/annalytics%20dashboard.png)
+
+8) **Profile Dashboard** — _View and manage profile settings_
+
+![08 – Profile Dashboard](pics/progile%20dashboard%20for%20viewing%20profile.png)
+
+9) **MongoDB Data** — _Data persistence confirmation_
+
+![09 – MongoDB Data](pics/data%20saved%20in%20mongodb.png)
 
 ## Repository Layout
 
