@@ -11,8 +11,7 @@ const API_ENDPOINTS = {
         getAll: '/api/expenses',
         create: '/api/expenses',
         update: (id) => `/api/expenses/${id}`,
-        delete: (id) => `/api/expenses/${id}`,
-        search: '/api/expenses/search'
+        delete: (id) => `/api/expenses/${id}`
     },
     categories: {
         getAll: '/api/categories',
@@ -22,8 +21,10 @@ const API_ENDPOINTS = {
     },
     analytics: {
         summary: '/api/analytics/summary',
-        byCategory: '/api/analytics/by-category',
-        trends: '/api/analytics/trends'
+        recent: '/api/analytics/recent',
+        topCategories: '/api/analytics/top-categories',
+        budgetComparison: '/api/analytics/budget-comparison',
+        byDate: '/api/analytics/by-date'
     }
 };
 
@@ -37,8 +38,7 @@ const AppState = {
     dbStatus: {
         mongodb: false,
         redis: false,
-        postgres: false,
-        docker: false
+        postgres: false
     }
 };
 
@@ -100,7 +100,13 @@ const apiRequest = async (url, options = {}) => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Something went wrong');
+            const errorDetails = Array.isArray(data.errors) ? data.errors : null;
+            const message = data.message || 'Something went wrong';
+            if (errorDetails && errorDetails.length) {
+                // Prefer showing actionable validation details.
+                throw new Error(`${message}: ${errorDetails.join(' • ')}`);
+            }
+            throw new Error(message);
         }
 
         return data;
@@ -139,15 +145,24 @@ const login = async (email, password) => {
 
 const register = async (name, email, password) => {
     try {
+        const trimmedName = (name || '').trim();
+        const nameParts = trimmedName ? trimmedName.split(/\s+/) : [];
+        const firstName = nameParts[0] || trimmedName;
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+        // IMPORTANT: Joi treats empty strings as invalid unless explicitly allowed.
+        // Only send optional fields when they have a real value.
+        const payload = {
+            username: email.split('@')[0],
+            email,
+            password,
+            ...(firstName ? { firstName } : {})
+        };
+        if (lastName) payload.lastName = lastName;
+
         const data = await apiRequest(API_ENDPOINTS.auth.register, {
             method: 'POST',
-            body: JSON.stringify({ 
-                username: email.split('@')[0], // Generate username from email
-                email, 
-                password,
-                firstName: name,
-                lastName: ''
-            })
+            body: JSON.stringify(payload)
         });
 
         // Backend returns token in data.data.accessToken
@@ -182,26 +197,18 @@ const logout = () => {
 
 const getCurrentUser = async () => {
     try {
-        // Check if we have stored user info
-        const userId = localStorage.getItem('userId');
-        const userEmail = localStorage.getItem('userEmail');
-        const userName = localStorage.getItem('userName');
-        
-        if (userId && userEmail && userName) {
-            // Use cached user data
-            AppState.user = {
-const getCurrentUser = async () => {
-    try {
         const data = await apiRequest(API_ENDPOINTS.auth.me);
-        AppState.user = data.data?.user || data.user;
+        // Backend returns the user directly in data.data
+        AppState.user = data.data || data.user;
         AppState.isAuthenticated = true;
-        
-        // Store for persistence
+
         const user = AppState.user;
-        localStorage.setItem('userId', user._id || user.id);
-        localStorage.setItem('userEmail', user.email);
-        localStorage.setItem('userName', user.firstName || user.name || 'User');
-        
+        if (user) {
+            localStorage.setItem('userId', user._id || user.id);
+            localStorage.setItem('userEmail', user.email || '');
+            localStorage.setItem('userName', user.firstName || user.name || 'User');
+        }
+
         return AppState.user;
     } catch (error) {
         removeToken();
@@ -209,18 +216,19 @@ const getCurrentUser = async () => {
         showAuthModal();
         throw error;
     }
-};      throw error;
-    }
 };
 
 // Expense Functions
-const fetchExpenses = async () => {
+const fetchExpenses = async ({ page = 1, limit = 100, search = '' } = {}) => {
     if (!AppState.isAuthenticated) {
         return [];
     }
     try {
-        const data = await apiRequest(API_ENDPOINTS.expenses.getAll);
-        AppState.expenses = data.expenses || data.data || [];
+        const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+        if (search) query.set('search', search);
+
+        const data = await apiRequest(`${API_ENDPOINTS.expenses.getAll}?${query.toString()}`);
+        AppState.expenses = data.data || data.expenses || [];
         return AppState.expenses;
     } catch (error) {
         console.error('Error fetching expenses:', error);
@@ -253,13 +261,14 @@ const deleteExpense = async (id) => {
 };
 
 // Category Functions
-const fetchCategories = async () => {
+const fetchCategories = async ({ includeStats = false } = {}) => {
     if (!AppState.isAuthenticated) {
         return [];
     }
     try {
-        const data = await apiRequest(API_ENDPOINTS.categories.getAll);
-        AppState.categories = data.categories || data.data || [];
+        const url = includeStats ? `${API_ENDPOINTS.categories.getAll}?includeStats=true` : API_ENDPOINTS.categories.getAll;
+        const data = await apiRequest(url);
+        AppState.categories = data.data || data.categories || [];
         return AppState.categories;
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -292,44 +301,50 @@ const deleteCategory = async (id) => {
 };
 
 // Analytics Functions
-const fetchAnalytics = async () => {
+const fetchAnalyticsSummary = async () => {
     try {
         const data = await apiRequest(API_ENDPOINTS.analytics.summary);
-        return data;
+        return data.data || data;
     } catch (error) {
-        console.error('Error fetching analytics:', error);
+        console.error('Error fetching analytics summary:', error);
         return null;
+    }
+};
+
+const fetchRecentExpenses = async (limit = 5) => {
+    try {
+        const data = await apiRequest(`${API_ENDPOINTS.analytics.recent}?limit=${encodeURIComponent(limit)}`);
+        return data.data || [];
+    } catch (error) {
+        console.error('Error fetching recent expenses:', error);
+        return [];
+    }
+};
+
 // Database Status Check
 const checkDatabaseStatus = async () => {
     try {
-        // Check server health endpoint
-        try {
-            await fetch(`${API_BASE_URL}/health`);
-            AppState.dbStatus.mongodb = true;
-            AppState.dbStatus.redis = true;
-            AppState.dbStatus.postgres = true;
-            AppState.dbStatus.docker = true;
-            
-            updateStatusIndicator('mongoStatus', true);
-            updateStatusIndicator('redisStatus', true);
-            updateStatusIndicator('postgresStatus', true);
-            updateStatusIndicator('dockerStatus', true);
-        } catch {
-            AppState.dbStatus.mongodb = false;
-            AppState.dbStatus.redis = false;
-            AppState.dbStatus.postgres = false;
-            AppState.dbStatus.docker = false;
-            
-            updateStatusIndicator('mongoStatus', false);
-            updateStatusIndicator('redisStatus', false);
-            updateStatusIndicator('postgresStatus', false);
-            updateStatusIndicator('dockerStatus', false);
-        }
+        const response = await fetch(`${API_BASE_URL}/health`);
+        const ok = response.ok;
+
+        // Health endpoint doesn't expose per-db health; treat server up as "online".
+        AppState.dbStatus.mongodb = ok;
+        AppState.dbStatus.redis = ok;
+        AppState.dbStatus.postgres = ok;
+
+        updateStatusIndicator('mongoStatus', ok);
+        updateStatusIndicator('redisStatus', ok);
+        updateStatusIndicator('postgresStatus', ok);
     } catch (error) {
-        console.error('Error checking database status:', error);
-    }
-};  } catch (error) {
-        console.error('Error checking database status:', error);
+        AppState.dbStatus.mongodb = false;
+        AppState.dbStatus.redis = false;
+        AppState.dbStatus.postgres = false;
+
+        updateStatusIndicator('mongoStatus', false);
+        updateStatusIndicator('redisStatus', false);
+        updateStatusIndicator('postgresStatus', false);
+
+        console.error('Error checking server health:', error);
     }
 };
 
@@ -348,24 +363,25 @@ const updateStatusIndicator = (elementId, isActive) => {
 
 // UI Rendering Functions
 const renderDashboard = async () => {
-    const expenses = await fetchExpenses();
-    const categories = await fetchCategories();
+    const summary = await fetchAnalyticsSummary();
+    const categories = await fetchCategories({ includeStats: true });
+    const recent = await fetchRecentExpenses(5);
 
-    // Calculate statistics
-    const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-    const currentMonth = new Date().getMonth();
-    const monthExpenses = expenses
-        .filter(exp => new Date(exp.date).getMonth() === currentMonth)
-        .reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const overview = summary?.overview || {};
 
-    // Update stats
-    document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
-    document.getElementById('monthExpenses').textContent = formatCurrency(monthExpenses);
-    document.getElementById('totalTransactions').textContent = expenses.length;
-    document.getElementById('totalCategories').textContent = categories.length;
+    // Monthly total from analytics monthlyTrend (if present)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const monthlyTrend = Array.isArray(summary?.monthlyTrend) ? summary.monthlyTrend : [];
+    const thisMonth = monthlyTrend.find((t) => t?._id?.year === currentYear && t?._id?.month === currentMonth);
 
-    // Render recent expenses
-    renderRecentExpenses(expenses.slice(0, 5));
+    document.getElementById('totalExpenses').textContent = formatCurrency(overview.totalAmount || 0);
+    document.getElementById('monthExpenses').textContent = formatCurrency(thisMonth?.total || 0);
+    document.getElementById('totalTransactions').textContent = String(overview.totalExpenses || 0);
+    document.getElementById('totalCategories').textContent = String(categories.length || 0);
+
+    renderRecentExpenses(recent);
 };
 
 const renderRecentExpenses = (expenses) => {
@@ -408,7 +424,8 @@ const renderRecentExpenses = (expenses) => {
 };
 
 const renderExpensesList = async () => {
-    const expenses = await fetchExpenses();
+    const search = document.getElementById('searchExpenses')?.value?.trim() || '';
+    const expenses = await fetchExpenses({ search });
     const container = document.getElementById('expensesList');
 
     if (expenses.length === 0) {
@@ -453,8 +470,7 @@ const renderExpensesList = async () => {
 };
 
 const renderCategoriesList = async () => {
-    const categories = await fetchCategories();
-    const expenses = AppState.expenses;
+    const categories = await fetchCategories({ includeStats: true });
     const container = document.getElementById('categoriesList');
 
     if (categories.length === 0) {
@@ -469,27 +485,39 @@ const renderCategoriesList = async () => {
     }
 
     container.innerHTML = categories.map(category => {
-        const categoryExpenses = expenses.filter(exp => exp.category?._id === category._id || exp.category === category._id);
-        const totalAmount = categoryExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+        const totalSpent = category.totalSpent || 0;
+        const expenseCount = category.expenseCount || 0;
+        const budget = category.budget || 0;
+        const utilization = category.budgetUtilization;
+        const over = category.isOverBudget;
 
         return `
             <div class="category-card">
                 <h4>${category.name}</h4>
                 <p>${category.description || 'No description'}</p>
                 <div class="category-stats">
-                    ${categoryExpenses.length} expenses • ${formatCurrency(totalAmount)}
+                    ${expenseCount} expenses • ${formatCurrency(totalSpent)}
                 </div>
+                ${budget > 0 ? `
+                    <div class="budget-row">
+                        <div class="budget-label">Budget</div>
+                        <div class="budget-value ${over ? 'danger' : ''}">${formatCurrency(budget)}</div>
+                    </div>
+                    <div class="budget-bar" role="progressbar" aria-valuenow="${Math.round(utilization || 0)}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="budget-bar__fill ${over ? 'danger' : ''}" style="width:${Math.min(100, Math.max(0, utilization || 0))}%;"></div>
+                    </div>
+                ` : ''}
             </div>
         `;
     }).join('');
 };
 
 const renderAnalytics = async () => {
-    const expenses = AppState.expenses;
-    const categories = AppState.categories;
+    const summary = await fetchAnalyticsSummary();
     const container = document.getElementById('categoryChart');
 
-    if (expenses.length === 0) {
+    const byCategory = Array.isArray(summary?.byCategory) ? summary.byCategory : [];
+    if (byCategory.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-chart-pie"></i>
@@ -500,14 +528,9 @@ const renderAnalytics = async () => {
         return;
     }
 
-    // Calculate spending by category
-    const categoryData = categories.map(category => {
-        const categoryExpenses = expenses.filter(exp => 
-            exp.category?._id === category._id || exp.category === category._id
-        );
-        const total = categoryExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-        return { name: category.name, amount: total };
-    }).filter(cat => cat.amount > 0);
+    const categoryData = byCategory
+        .map((c) => ({ name: c.name || 'Uncategorized', amount: c.total || 0 }))
+        .filter((c) => c.amount > 0);
 
     // Render simple text-based chart
     container.innerHTML = `
@@ -679,6 +702,16 @@ const setupEventListeners = () => {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
+        if (!email || !email.includes('@')) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+
+        if (!password) {
+            showToast('Please enter your password', 'error');
+            return;
+        }
+
         try {
             const result = await login(email, password);
             console.log('Login successful:', result);
@@ -707,6 +740,21 @@ const setupEventListeners = () => {
         const name = document.getElementById('registerName').value;
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
+
+        if (!name || !name.trim()) {
+            showToast('Please enter your name', 'error');
+            return;
+        }
+
+        if (!email || !email.includes('@')) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+
+        if (!password || password.length < 6) {
+            showToast('Password must be at least 6 characters', 'error');
+            return;
+        }
 
         try {
             const result = await register(name, email, password);
@@ -774,6 +822,21 @@ const setupEventListeners = () => {
             date: document.getElementById('expenseDate').value
         };
 
+        if (!Number.isFinite(expenseData.amount)) {
+            showToast('Please enter a valid amount', 'error');
+            return;
+        }
+
+        if (!expenseData.description || !expenseData.description.trim()) {
+            showToast('Please enter a description', 'error');
+            return;
+        }
+
+        if (!expenseData.category) {
+            showToast('Please select a category', 'error');
+            return;
+        }
+
         try {
             await createExpense(expenseData);
             hideModal('expenseModal');
@@ -837,54 +900,11 @@ const setupEventListeners = () => {
     let searchTimeout;
     document.getElementById('searchExpenses')?.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
-        const searchTerm = e.target.value.toLowerCase();
+        const searchTerm = e.target.value;
         
         searchTimeout = setTimeout(() => {
-            const filteredExpenses = AppState.expenses.filter(expense =>
-                expense.description?.toLowerCase().includes(searchTerm) ||
-                expense.category?.name?.toLowerCase().includes(searchTerm)
-            );
-            
-            // Re-render with filtered expenses
-            const container = document.getElementById('expensesList');
-            if (filteredExpenses.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h3>No results found</h3>
-                        <p>Try a different search term</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Amount</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${filteredExpenses.map(expense => `
-                                <tr>
-                                    <td>${formatDate(expense.date)}</td>
-                                    <td>${expense.description || 'No description'}</td>
-                                    <td>${expense.category?.name || 'Uncategorized'}</td>
-                                    <td><strong>${formatCurrency(expense.amount)}</strong></td>
-                                    <td>
-                                        <button class="btn-icon danger" onclick="handleDeleteExpense('${expense._id}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
+            // Re-render using server-side search
+            renderExpensesList();
         }, 300);
     });
 

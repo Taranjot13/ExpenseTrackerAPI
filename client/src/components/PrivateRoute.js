@@ -1,13 +1,19 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = () => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    // You can add a loading spinner here
-    return <div>Loading...</div>;
+    return (
+      <div className="page">
+        <div className="card card--center">
+          <div className="spinner" aria-label="Loading" />
+          <div className="muted">Loading…</div>
+        </div>
+      </div>
+    );
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;

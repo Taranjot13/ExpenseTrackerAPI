@@ -1,13 +1,14 @@
 # Expense Tracker API
 
-A comprehensive, production-ready RESTful API for expense tracking, featuring JWT authentication, real-time updates via WebSockets, and advanced analytics. This project is fully containerized with Docker and includes support for MongoDB, PostgreSQL, and Redis.
+A comprehensive, production-ready RESTful API for expense tracking, featuring JWT authentication, real-time updates via WebSockets, and advanced analytics. Supports MongoDB (required) with optional PostgreSQL and Redis.
 
 ---
 
 ## ✨ Key Features
 
 - **Secure Authentication**: JWT-based authentication with access/refresh tokens and secure password hashing using `bcryptjs`.
-- **Full-Stack Application**: Includes a Node.js/Express backend and a React frontend.
+- **Single Website + REST API**: One Express app serves the UI (EJS + vanilla JS) and the REST API from the same origin on `http://localhost:5000`.
+- **React Client (Optional)**: The `client/` folder is optional and not started by default.
 - **Real-Time Updates**: WebSocket integration with `socket.io` for instant client updates.
 - **Comprehensive Expense Management**: Full CRUD operations for expenses and categories.
 - **Advanced Analytics**: Endpoints for spending summaries, category breakdowns, and budget comparisons.
@@ -15,7 +16,6 @@ A comprehensive, production-ready RESTful API for expense tracking, featuring JW
     - **MongoDB**: Primary NoSQL database for core data.
     - **PostgreSQL**: Optional relational database for complex queries.
     - **Redis**: Server-side caching for high-performance data retrieval.
-- **Containerized Environment**: Fully orchestrated with Docker and Docker Compose for easy setup and deployment.
 - **Robust Security**: Implements `helmet` for security headers, `express-mongo-sanitize` to prevent NoSQL injection, and rate limiting.
 - **Comprehensive Testing**: Includes a full testing suite with Jest for unit, integration, and functional tests.
 
@@ -28,14 +28,13 @@ A comprehensive, production-ready RESTful API for expense tracking, featuring JW
 - **Databases**: MongoDB, PostgreSQL, Redis
 - **Authentication**: JWT (JSON Web Tokens), bcryptjs
 - **Real-time**: WebSockets (Socket.IO)
-- **Containerization**: Docker, Docker Compose
 - **Testing**: Jest
 
 ---
 
 ## 🚀 Getting Started
 
-This project can be run locally without Docker, which is recommended for systems with limited memory. Docker is the recommended approach for production deployment.
+This project is intended to run directly on Node.js without Docker.
 
 ### Prerequisites
 
@@ -44,9 +43,9 @@ This project can be run locally without Docker, which is recommended for systems
 
 ---
 
-### A. Local Development Setup (Without Docker)
+### A. Local Development Setup
 
-This approach gives you granular control over each service. You will need to run the databases, backend, and frontend in separate terminals.
+This approach runs a single Express website (UI + API) on localhost. You only need MongoDB running for core features.
 
 1.  **Clone the repository**:
     ```bash
@@ -59,12 +58,13 @@ This approach gives you granular control over each service. You will need to run
     npm install
     ```
 
-3.  **Install Frontend Dependencies**:
-    ```bash
-    cd client
-    npm install
-    cd ..
-    ```
+3.  **(Optional) Install React Client Dependencies**:
+  Only if you want to run the separate React client.
+  ```bash
+  cd client
+  npm install
+  cd ..
+  ```
 
 4.  **Set Up Environment Variables**:
     Create a `.env` file in the root directory and configure it with your local database connections and secrets.
@@ -75,10 +75,7 @@ This approach gives you granular control over each service. You will need to run
 
     # Database Connections
     MONGODB_URI=mongodb://localhost:27017/expense_tracker
-    POSTGRES_HOST=localhost
-    POSTGRES_USER=postgres
     POSTGRES_PASSWORD=your_postgres_password
-    POSTGRES_DB=expense_tracker
     REDIS_HOST=localhost
     REDIS_PORT=6379
 
@@ -87,38 +84,25 @@ This approach gives you granular control over each service. You will need to run
     JWT_REFRESH_SECRET=your-super-secret-refresh-key
     ```
 
-5.  **Start Your Databases**:
-    Ensure your local MongoDB, PostgreSQL, and Redis services are running.
+5.  **Start MongoDB**:
+  Ensure your local MongoDB service is running (PostgreSQL/Redis are optional).
 
-6.  **Run the Backend Server**:
-    In the root directory, run:
-    ```bash
-    npm start
-    ```
-    The backend API will be available at `http://localhost:5000`.
+6.  **Run the Website (UI + API)**:
+  In the root directory, run:
+  ```bash
+  npm run dev
+  ```
+  Open:
+  - UI: `http://localhost:5000`
+  - Health: `http://localhost:5000/health`
+  - API base: `http://localhost:5000/api`
 
-7.  **Run the Frontend Application**:
-    In a new terminal, navigate to the `client` directory and run:
-    ```bash
-    cd client
-    npm start
-    ```
-    The frontend will be available at `http://localhost:3000`.
-
----
-
-### B. Deployment with Docker
-
-This is the recommended method for production or for users with sufficient system resources. It automatically builds and runs the entire application stack.
-
-1.  **Ensure Docker is running**, then execute the following command from the root directory:
-    ```bash
-    docker-compose up --build
-    ```
-
-2.  **Access the applications**:
-    -   **Frontend (React App)**: [http://localhost:3000](http://localhost:3000)
-    -   **Backend API**: [http://localhost:5000](http://localhost:5000)
+7.  **(Optional) Run the React Client**:
+  If you still want the separate React UI:
+  ```bash
+  npm run client
+  ```
+  React will run at `http://localhost:3000`.
 
 ---
 
@@ -157,14 +141,11 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 
 ---
-
 ## Features
 
 - **User Authentication & Authorization**
   - JWT-based authentication with access and refresh tokens
   - Secure password hashing using bcrypt (SHA-256 based)
-  - Protected routes with middleware
-  - User profile management
 
 - **Expense Management**
   - CRUD operations for expenses
@@ -223,7 +204,6 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 - MongoDB (v4.4 or higher) - **Required**
 - Redis (v6 or higher) - **Optional** (for caching features)
 - PostgreSQL (v12 or higher) - **Optional** (for relational database features)
-- Docker & Docker Compose - **Optional** (for containerized MongoDB)
 
 ## Installation
 
@@ -328,9 +308,6 @@ net start MongoDB
 # Start Redis server
 redis-server
 
-# Or using Docker:
-docker run --name expense-redis -p 6379:6379 -d redis:7-alpine
-
 # Test Redis connection:
 redis-cli ping
 # Response: PONG
@@ -341,20 +318,8 @@ redis-cli ping
 # Start PostgreSQL service (Windows)
 net start postgresql-x64-14
 
-# Or using Docker
-docker run --name expense-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:14
-
 # Connect to PostgreSQL
 psql -U postgres -d expense_tracker
-```
-
-**Docker Compose (All Services with Replication):**
-```bash
-# Start all services including MongoDB replica set and Redis
-npm run docker:replication
-
-# Stop all services
-npm run docker:stop
 ```
 
 ### 6. Start Server
@@ -403,62 +368,6 @@ npm start
 ```
 
 The server will start on `http://localhost:5000`
-
-## Docker Setup
-
-This project includes Docker support for running MongoDB as a containerized service.
-
-### Docker Compose Configuration
-
-The `docker-compose.yml` file includes:
-- **MongoDB 7** - NoSQL database instance
-- **Persistent Data** - Volume-mounted data storage
-- **Health Checks** - Automatic container health monitoring
-- **Auto-restart** - Automatic recovery on failure
-
-### Docker Commands
-
-**Start MongoDB Container:**
-```bash
-docker-compose up -d
-```
-
-**View Running Containers:**
-```bash
-docker ps
-```
-
-**View MongoDB Logs:**
-```bash
-docker-compose logs -f mongodb
-```
-
-**Stop MongoDB Container:**
-```bash
-docker-compose down
-```
-
-**Stop and Remove Data:**
-```bash
-docker-compose down -v
-```
-
-**Restart MongoDB:**
-```bash
-docker-compose restart mongodb
-```
-
-**Access MongoDB Shell:**
-```bash
-docker exec -it expense-tracker-mongodb mongosh
-```
-
-### Verifying MongoDB Connection
-
-Once MongoDB is running, your application will automatically connect when you start the server. You should see:
-```
-[Success] MongoDB Connected: localhost
-```
 
 ## Quick Test
 
@@ -509,7 +418,6 @@ This project implements key concepts from the Backend Engineering-II syllabus:
 - **Testing**: Unit, Integration, Functional testing setup
 
 ### Deployment (Lectures 84-90)
-- **Docker**: Containerization with docker-compose
 - **AWS**: EC2, RDS, S3, Route 53, Elastic Beanstalk ready
 
 ## CLI Report Tool (Syllabus: CLI Apps & Async Programming)
@@ -570,9 +478,6 @@ REDIS_PASSWORD=
 ```bash
 # Setup replica set
 npm run setup:replication
-
-# Or use Docker Compose
-npm run docker:replication
 ```
 
 **Connection String:**
@@ -625,19 +530,7 @@ POSTGRES_PASSWORD=yourpassword
 POSTGRES_DB=expense_tracker
 ```
 
-## Deployment Guide (Syllabus: AWS, Docker, Beanstalk)
-
-### Docker Containerization
-```bash
-# Run MongoDB with Docker
-docker-compose up -d
-
-# Build API Docker image
-docker build -t expense-tracker-api .
-
-# Run API container
-docker run -p 5000:5000 --env-file .env expense-tracker-api
-```
+## Deployment Guide (Syllabus: AWS, Beanstalk)
 
 ### AWS Deployment
 
@@ -1188,7 +1081,7 @@ Expense-Tracker-API/
 ├── .env                    # Environment variables (not in git)
 ├── .env.example            # Environment template
 ├── .gitignore              # Git ignore patterns
-├── docker-compose.yml      # Docker Compose for MongoDB
+├── docker/                 # Archived container configs (optional)
 ├── package.json            # NPM dependencies & scripts
 ├── postman_collection.json # Postman API collection
 ├── README.md               # Project documentation
@@ -1230,18 +1123,6 @@ Expense-Tracker-API/
    - Log management
    - Error tracking (e.g., Sentry)
    - Performance monitoring (e.g., New Relic)
-
-### Docker Deployment (Example)
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-EXPOSE 5000
-CMD ["node", "server.js"]
-```
 
 ## 🤝 Contributing
 

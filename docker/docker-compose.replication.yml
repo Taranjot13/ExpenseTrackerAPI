@@ -93,7 +93,9 @@ services:
 
   # Expense Tracker API
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/api/Dockerfile
     container_name: expense-api
     ports:
       - "5000:5000"
@@ -121,7 +123,7 @@ services:
       - expense-network
     restart: unless-stopped
     volumes:
-      - ./ssl:/app/ssl
+      - ../ssl:/app/ssl
 
 volumes:
   redis-data:

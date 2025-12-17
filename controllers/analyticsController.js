@@ -97,6 +97,12 @@ const getSummary = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
+        // Backward-compatible top-level fields (used by tests / some clients)
+        totalExpenses: total,
+        expenseCount: totalExpenses,
+        totalAmount: total,
+        averageExpense: average,
+        currency: req.user.currency,
         overview: {
           totalExpenses,
           totalAmount: total,
@@ -184,6 +190,67 @@ const getSpendingByDate = async (req, res, next) => {
       data: result
     });
 
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get spending trends (monthly/weekly/daily)
+// @route   GET /api/analytics/trends
+// @access  Private
+const getTrends = async (req, res, next) => {
+  try {
+    const { period = 'monthly', startDate, endDate } = req.query;
+
+    const dateFilter = { user: req.user._id };
+    if (startDate || endDate) {
+      dateFilter.date = {};
+      if (startDate) dateFilter.date.$gte = new Date(startDate);
+      if (endDate) dateFilter.date.$lte = new Date(endDate);
+    }
+
+    let groupId;
+    let sortSpec;
+
+    if (period === 'daily') {
+      groupId = {
+        year: { $year: '$date' },
+        month: { $month: '$date' },
+        day: { $dayOfMonth: '$date' }
+      };
+      sortSpec = { '_id.year': 1, '_id.month': 1, '_id.day': 1 };
+    } else if (period === 'weekly') {
+      groupId = {
+        year: { $year: '$date' },
+        week: { $week: '$date' }
+      };
+      sortSpec = { '_id.year': 1, '_id.week': 1 };
+    } else {
+      // default monthly
+      groupId = {
+        year: { $year: '$date' },
+        month: { $month: '$date' }
+      };
+      sortSpec = { '_id.year': 1, '_id.month': 1 };
+    }
+
+    const trend = await Expense.aggregate([
+      { $match: dateFilter },
+      {
+        $group: {
+          _id: groupId,
+          total: { $sum: '$amount' },
+          count: { $sum: 1 },
+          average: { $avg: '$amount' }
+        }
+      },
+      { $sort: sortSpec }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: trend
+    });
   } catch (error) {
     next(error);
   }
@@ -349,6 +416,7 @@ const getRecentExpenses = async (req, res, next) => {
 module.exports = {
   getSummary,
   getSpendingByDate,
+  getTrends,
   getTopCategories,
   getBudgetComparison,
   getRecentExpenses

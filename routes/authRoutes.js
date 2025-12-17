@@ -22,6 +22,7 @@ router.post('/refresh', refreshAccessToken);
 // Protected routes
 router.post('/logout', authenticate, logout);
 router.get('/me', authenticate, getProfile);
+router.get('/profile', authenticate, getProfile);
 router.put('/profile', authenticate, updateProfile);
 router.put('/password', authenticate, changePassword);
 router.get('/users', authenticate, getAllUsers);

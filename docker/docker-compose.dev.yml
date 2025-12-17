@@ -4,8 +4,8 @@ services:
   # Node.js Application (Development)
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/api/Dockerfile
       target: builder
     container_name: expense-tracker-api-dev
     ports:
@@ -29,9 +29,9 @@ services:
       - expense-tracker-network
     restart: unless-stopped
     volumes:
-      - .:/app
+      - ..:/app
       - /app/node_modules
-      - ./ssl:/app/ssl
+      - ../ssl:/app/ssl
     command: npm run dev
 
   # MongoDB Database

@@ -8,7 +8,7 @@ const {
   deleteCategory
 } = require('../controllers/categoryController');
 const authenticate = require('../middleware/authenticate');
-const { validate, categorySchema } = require('../middleware/validator');
+const { validate, categorySchema, categoryUpdateSchema } = require('../middleware/validator');
 const { cache, invalidateCacheAfter } = require('../middleware/cache');
 
 // All routes are protected
@@ -21,7 +21,7 @@ router.route('/')
 
 router.route('/:id')
   .get(cache(600), getCategory)
-  .put(validate(categorySchema), invalidateCacheAfter('categories'), updateCategory)
+  .put(validate(categoryUpdateSchema), invalidateCacheAfter('categories'), updateCategory)
   .delete(invalidateCacheAfter('categories'), deleteCategory);
 
 module.exports = router;

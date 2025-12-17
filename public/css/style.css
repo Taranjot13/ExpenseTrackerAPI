@@ -567,6 +567,47 @@ td {
 .category-stats {
     margin-top: 12px;
     padding-top: 12px;
+
+.budget-row {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.budget-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.budget-value {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.budget-value.danger {
+    color: var(--danger-color);
+}
+
+.budget-bar {
+    margin-top: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--border-color);
+    overflow: hidden;
+}
+
+.budget-bar__fill {
+    height: 100%;
+    width: 0;
+    background: var(--success-color);
+}
+
+.budget-bar__fill.danger {
+    background: var(--danger-color);
+}
     border-top: 1px solid var(--border-color);
     font-size: 13px;
     color: var(--text-secondary);

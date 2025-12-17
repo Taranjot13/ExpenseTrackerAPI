@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const path = require('path');
 
 const commands = [
   {
@@ -12,7 +13,7 @@ const commands = [
     command: 'npm start',
     name: 'FRONTEND',
     options: {
-      cwd: 'client',
+      cwd: path.join(__dirname, 'client'),
     },
   },
 ];

@@ -12,7 +12,7 @@ const validate = (schema) => {
       const errors = error.details.map(detail => detail.message);
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
+        message: 'validation failed',
         errors
       });
     }
@@ -54,9 +54,36 @@ const expenseSchema = Joi.object({
   })
 });
 
+// Expense update schema (all fields optional for PATCH-like updates via PUT)
+const expenseUpdateSchema = Joi.object({
+  amount: Joi.number().min(0).optional(),
+  currency: Joi.string().length(3).uppercase().optional(),
+  category: Joi.string().optional(),
+  description: Joi.string().max(500).optional(),
+  date: Joi.date().optional(),
+  paymentMethod: Joi.string().valid('cash', 'credit_card', 'debit_card', 'bank_transfer', 'digital_wallet', 'other').optional(),
+  tags: Joi.array().items(Joi.string()).optional(),
+  notes: Joi.string().max(1000).optional(),
+  isRecurring: Joi.boolean().optional(),
+  recurringPeriod: Joi.string().valid('daily', 'weekly', 'monthly', 'yearly').when('isRecurring', {
+    is: true,
+    then: Joi.required(),
+    otherwise: Joi.optional()
+  })
+});
+
 // Category validation schemas
 const categorySchema = Joi.object({
   name: Joi.string().max(50).required(),
+  color: Joi.string().pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
+  icon: Joi.string().optional(),
+  budget: Joi.number().min(0).optional().allow(null),
+  description: Joi.string().max(200).optional()
+});
+
+// Category update schema (all fields optional for PATCH-like updates via PUT)
+const categoryUpdateSchema = Joi.object({
+  name: Joi.string().max(50).optional(),
   color: Joi.string().pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
   icon: Joi.string().optional(),
   budget: Joi.number().min(0).optional().allow(null),
@@ -68,5 +95,7 @@ module.exports = {
   registerSchema,
   loginSchema,
   expenseSchema,
-  categorySchema
+  expenseUpdateSchema,
+  categorySchema,
+  categoryUpdateSchema
 };

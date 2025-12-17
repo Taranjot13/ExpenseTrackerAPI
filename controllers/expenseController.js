@@ -107,15 +107,22 @@ const getExpenses = async (req, res, next) => {
 
     // Get total count
     const total = await Expense.countDocuments(query);
+    const pages = Math.ceil(total / limitNum);
 
     res.status(200).json({
       success: true,
-      data: expenses,
+      data: {
+        expenses,
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages
+      },
       pagination: {
         page: pageNum,
         limit: limitNum,
         total,
-        pages: Math.ceil(total / limitNum)
+        pages
       }
     });
 

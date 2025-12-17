@@ -10,27 +10,20 @@ jobs:
     name: Run Tests
     uses: ./.github/workflows/test.yml
 
-  build:
-    name: Build Docker
-    needs: test
-    uses: ./.github/workflows/docker.yml
-
   deploy-notification:
     name: Deployment Ready
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Deployment Ready Notification
         run: |
           echo "✅ All tests passed"
-          echo "✅ Docker image built successfully"
           echo "📦 Ready for deployment"
           echo ""
           echo "Next steps:"
-          echo "1. Pull the latest image: docker pull ghcr.io/${{ github.repository }}:latest"
-          echo "2. Update docker-compose.yml to use the new image"
-          echo "3. Deploy: docker-compose up -d"
+          echo "1. Provision infrastructure (if needed)"
+          echo "2. Deploy your Node app to your target platform"
           echo ""
           echo "Note: AWS deployment is not configured in this workflow"

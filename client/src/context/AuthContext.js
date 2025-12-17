@@ -74,13 +74,16 @@ export const AuthProvider = ({ children }) => {
       const res = await api.post('/auth/register', formData);
       dispatch({
         type: 'REGISTER_SUCCESS',
-        payload: res.data,
+        payload: {
+          token: res.data.data.accessToken,
+          user: res.data.data.user
+        },
       });
       loadUser();
     } catch (err) {
       dispatch({
         type: 'REGISTER_FAIL',
-        payload: err.response.data.message,
+        payload: err.response?.data?.message || 'Registration failed',
       });
     }
   };
@@ -90,13 +93,16 @@ export const AuthProvider = ({ children }) => {
       const res = await api.post('/auth/login', formData);
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: res.data,
+        payload: {
+          token: res.data.data.accessToken,
+          user: res.data.data.user
+        },
       });
       loadUser();
     } catch (err) {
       dispatch({
         type: 'LOGIN_FAIL',
-        payload: err.response.data.message,
+        payload: err.response?.data?.message || 'Login failed',
       });
     }
   };

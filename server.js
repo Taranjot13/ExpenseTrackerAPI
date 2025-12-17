@@ -45,9 +45,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Connect to databases
-connectMongoDB();
-connectPostgres();
-connectRedis(); // Connect to Redis for caching
+const initDependencies = async () => {
+  // For always-on local usage, MongoDB will retry in the background unless MONGODB_REQUIRED=true.
+  await connectMongoDB();
+  await connectPostgres();
+  await connectRedis(); // Connect to Redis for caching
+};
 
 // Middleware
 app.use(helmet({
@@ -122,17 +125,37 @@ app.use(errorHandler);
 // Start server only if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => {
-    const serverInfo = getServerInfo(server);
-    console.log(`[Server] ${serverInfo.protocol.toUpperCase()} server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-    console.log(`[Server] HTTPS: ${serverInfo.httpsEnabled ? 'Enabled' : 'Disabled'}`);
-    console.log(`[WebSocket] WebSocket server is ready`);
-    
-    if (!serverInfo.httpsEnabled && process.env.NODE_ENV === 'production') {
-      console.warn('[Security Warning] HTTPS is not enabled in production mode!');
-      console.warn('[Security Warning] Run "npm run generate:ssl" to create SSL certificates.');
+  (async () => {
+    try {
+      await initDependencies();
+
+      server.on('error', (err) => {
+        if (err && err.code === 'EADDRINUSE') {
+          console.error(`[Server] Port ${PORT} is already in use. Stop the other process (or change PORT) and try again.`);
+          console.error('[Server] Tip: run "npm run dev:clean" to kill the process using the port.');
+          process.exit(1);
+        }
+        console.error('[Server] Failed to start server:', err);
+        process.exit(1);
+      });
+
+      server.listen(PORT, () => {
+        const serverInfo = getServerInfo(server);
+        console.log(`[Server] ${serverInfo.protocol.toUpperCase()} server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+        console.log(`[Server] HTTPS: ${serverInfo.httpsEnabled ? 'Enabled' : 'Disabled'}`);
+        console.log(`[WebSocket] WebSocket server is ready`);
+
+        if (!serverInfo.httpsEnabled && process.env.NODE_ENV === 'production') {
+          console.warn('[Security Warning] HTTPS is not enabled in production mode!');
+          console.warn('[Security Warning] Run "npm run generate:ssl" to create SSL certificates.');
+        }
+      });
+    } catch (err) {
+      console.error('[Startup] Failed to initialize dependencies:', err);
+      // Only exit when startup is explicitly strict (e.g., MONGODB_REQUIRED=true).
+      process.exit(1);
     }
-  });
+  })();
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (err) => {

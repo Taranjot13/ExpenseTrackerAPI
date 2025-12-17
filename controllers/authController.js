@@ -167,7 +167,15 @@ const refreshAccessToken = async (req, res, next) => {
     }
 
     // Verify refresh token
-    const decoded = verifyRefreshToken(refreshToken);
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
+    }
 
     // Find user and verify stored refresh token
     const user = await User.findById(decoded.userId).select('+refreshToken');
@@ -179,14 +187,19 @@ const refreshAccessToken = async (req, res, next) => {
       });
     }
 
-    // Generate new access token
+    // Generate new tokens (rotate refresh token)
     const newAccessToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = newRefreshToken;
+    await user.save();
 
     res.status(200).json({
       success: true,
       message: 'Token refreshed successfully',
       data: {
-        accessToken: newAccessToken
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken
       }
     });
 
@@ -214,7 +227,7 @@ const logout = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Logout successful'
+      message: 'Logged out successfully'
     });
 
   } catch (error) {
@@ -241,6 +254,17 @@ const getProfile = async (req, res, next) => {
 // @access  Private
 const updateProfile = async (req, res, next) => {
   try {
+    const allowedKeys = new Set(['firstName', 'lastName', 'currency']);
+    const requestKeys = Object.keys(req.body || {});
+
+    const hasInvalidKeys = requestKeys.some((key) => !allowedKeys.has(key));
+    if (hasInvalidKeys || requestKeys.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'validation failed'
+      });
+    }
+
     const { firstName, lastName, currency } = req.body;
 
     const user = await User.findById(req.user._id);

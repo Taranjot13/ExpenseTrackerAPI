@@ -21,28 +21,12 @@ if (-not (Test-Path "node_modules")) {
     Write-Host "[Success] Dependencies installed successfully" -ForegroundColor Green
 }
 
-# Start Docker containers
-Write-Host "[Docker] Starting MongoDB container..." -ForegroundColor Yellow
-docker-compose up -d
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[Error] Failed to start Docker containers" -ForegroundColor Red
-    exit 1
-}
-
-# Wait for containers to be ready
-Write-Host "[Info] Waiting for services to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 5
-
-# Check container status
-$mongoStatus = docker ps --filter "name=expense-tracker-mongodb" --format "{{.Status}}"
-
-if ($mongoStatus) {
-    Write-Host "[Success] MongoDB: Running" -ForegroundColor Green
-} else {
-    Write-Host "[Warning] MongoDB container may not be running properly" -ForegroundColor Yellow
-    docker-compose ps
-}
+# MongoDB is required for core features.
+# This script no longer starts Docker containers.
+Write-Host "[Info] MongoDB is required. Ensure it's running locally:" -ForegroundColor Yellow
+Write-Host "  - MONGODB_URI defaults to: mongodb://localhost:27017/expense_tracker" -ForegroundColor Gray
+Write-Host "  - Start MongoDB (Windows service): net start MongoDB" -ForegroundColor Gray
+Write-Host "  - Or start mongod manually: mongod" -ForegroundColor Gray
 
 Write-Host ""
 Write-Host "[Success] Everything is ready!" -ForegroundColor Green
@@ -53,4 +37,4 @@ Write-Host "  Production mode:  npm start" -ForegroundColor White
 Write-Host ""
 Write-Host "Application will be available at: http://localhost:5000" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "To stop services: docker-compose down" -ForegroundColor Gray
+Write-Host "Tip: If the app can't connect, start MongoDB and re-run npm run dev" -ForegroundColor Gray

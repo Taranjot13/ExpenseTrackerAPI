@@ -1,7 +1,13 @@
 const rateLimit = require('express-rate-limit');
 
+const isTestEnv = process.env.NODE_ENV === 'test' || !!process.env.JEST_WORKER_ID;
+const isDevEnv = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+const isRateLimitDisabled = process.env.RATE_LIMIT_DISABLED === 'true';
+
+const passthrough = (req, res, next) => next();
+
 // Create rate limiter
-const rateLimiter = rateLimit({
+const rateLimiter = (isTestEnv || isDevEnv || isRateLimitDisabled) ? passthrough : rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // Limit each IP to 100 requests per windowMs
   message: {
@@ -17,7 +23,7 @@ const rateLimiter = rateLimit({
 });
 
 // Stricter rate limiter for auth routes
-const authRateLimiter = rateLimit({
+const authRateLimiter = (isTestEnv || isDevEnv || isRateLimitDisabled) ? passthrough : rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs for login/register
   message: {

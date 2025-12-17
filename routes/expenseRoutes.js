@@ -9,7 +9,7 @@ const {
   bulkDeleteExpenses
 } = require('../controllers/expenseController');
 const authenticate = require('../middleware/authenticate');
-const { validate, expenseSchema } = require('../middleware/validator');
+const { validate, expenseSchema, expenseUpdateSchema } = require('../middleware/validator');
 const { cache, invalidateCacheAfter, generateUserCacheKey } = require('../middleware/cache');
 
 // All routes are protected
@@ -22,7 +22,7 @@ router.route('/')
 
 router.route('/:id')
   .get(cache(300), getExpense) // Cache individual expense
-  .put(validate(expenseSchema), invalidateCacheAfter('expenses'), updateExpense)
+  .put(validate(expenseUpdateSchema), invalidateCacheAfter('expenses'), updateExpense)
   .delete(invalidateCacheAfter('expenses'), deleteExpense);
 
 // Bulk operations
