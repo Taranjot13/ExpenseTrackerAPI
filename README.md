@@ -21,35 +21,24 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 ## Table of Contents
 
 1. [Features](#features)
-2. [Architecture](#architecture)
-3. [Quick Start](#quick-start)
-4. [Screenshots](#screenshots)
-5. [Repository Layout](#repository-layout)
-6. [Project Structure](#project-structure)
-7. [Environment Variables](#environment-variables)
-8. [Scripts](#scripts)
-9. [Running Locally](#running-locally)
-10. [Docker](#docker)
-11. [API Overview](#api-overview)
-12. [WebSocket Events](#websocket-events)
-13. [Testing](#testing)
-14. [Production](#production)
-15. [Troubleshooting](#troubleshooting)
-16. [License](#license)
-17. [About the Developer](#-about-the-developer)
-18. [Contact](#-contact)
+2. [Quick Start](#quick-start)
+3. [Screenshots](#screenshots)
+4. [Repository Layout](#repository-layout)
+5. [Project Structure](#project-structure)
+6. [Environment Variables](#environment-variables)
+7. [Scripts](#scripts)
+8. [Running Locally](#running-locally)
+9. [Docker](#docker)
+10. [API Overview](#api-overview)
+11. [WebSocket Events](#websocket-events)
+12. [Testing](#testing)
+13. [Production](#production)
+14. [Troubleshooting](#troubleshooting)
+15. [License](#license)
+16. [About the Developer](#-about-the-developer)
+17. [Contact](#-contact)
 
-## Architecture
 
-```mermaid
-flowchart LR
-  A[React Client (3000)] -->|CORS API| B[Express API (5000)]
-  B -->|Mongoose| C[(MongoDB)]
-  B -->|Pool| D[(PostgreSQL)]
-  B -->|Cache| E[(Redis)]
-  B <--> F((Socket.IO))
-  B -->|Views| G[[EJS + Static Assets]]
-```
 
 ## Features
 
