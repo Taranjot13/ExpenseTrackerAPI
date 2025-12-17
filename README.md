@@ -10,9 +10,13 @@
 ![Tests](https://img.shields.io/badge/Tests-Jest%20%F0%9F%8E%AF-brightgreen)
 ![License](https://img.shields.io/badge/License-ISC-blue)
 
+[![Made by Taranjot Singh](https://img.shields.io/badge/Made%20by-Taranjot%20Singh-2c3e50)](https://github.com/Taranjot13)
+
 A production-ready Expense Tracker platform featuring a secure Express/Node.js API with MongoDB, optional PostgreSQL integration, Redis caching, WebSockets (Socket.IO), and a React client. Designed for local development, Dockerized environments, and PM2-managed deployments.
 
 ---
+
+> Built with ❤️ by **Taranjot Singh**
 
 ## Table of Contents
 
@@ -39,12 +43,12 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 
 ```mermaid
 flowchart LR
-  A[React Client (3000)] -- CORS/API --> B(Express API 5000)
-  B -- Mongoose --> C[(MongoDB)]
-  B -- Pool --> D[(PostgreSQL)]
-  B -- Cache --> E[(Redis)]
-  B <-- WebSocket --> F{{Socket.IO}}
-  B -- Views --> G[[EJS + Public Assets]]
+  A[React Client (3000)] -->|CORS API| B[Express API (5000)]
+  B -->|Mongoose| C[(MongoDB)]
+  B -->|Pool| D[(PostgreSQL)]
+  B -->|Cache| E[(Redis)]
+  B <--> F((Socket.IO))
+  B -->|Views| G[[EJS + Static Assets]]
 ```
 
 ## Features
@@ -458,7 +462,7 @@ npm run db:reset:mongo
 
 ## License
 
-ISC — see [package.json](package.json)
+ISC — Copyright © 2025 **Taranjot Singh** — see [package.json](package.json)
 
 ---
 
