@@ -26,6 +26,32 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 - Docker: Compose files for production and development
 - Process manager: PM2 via `ecosystem.config.js`
 
+## Screenshots
+
+Login and registration
+
+![Login](pics/login%20tab.png)
+![Register](pics/Register%20tab.png)
+
+Dashboard views
+
+![Dashboard](pics/dashboard.png)
+![After Creating Data](pics/dashboard%20after%20creating%20expenses%20and%20category.png)
+
+Create flows
+
+![Create Category](pics/create%20category%20dashboard.png)
+![Create Expense](pics/create%20expense%20dashboard.png)
+
+Analytics and profile
+
+![Analytics Dashboard](pics/annalytics%20dashboard.png)
+![Profile Dashboard](pics/progile%20dashboard%20for%20viewing%20profile.png)
+
+Data persistence
+
+![MongoDB Data](pics/data%20saved%20in%20mongodb.png)
+
 ## Repository Layout
 
 - API server entry: [server.js](server.js)
