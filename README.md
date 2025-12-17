@@ -1,18 +1,51 @@
 # Expense Tracker — API & Client
 
+![Node](https://img.shields.io/badge/Node-18%2B-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?logo=mongodb&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.x-4169E1?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-6%2B-DC382D?logo=redis&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-010101?logo=socket.io&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=061A23)
+![Tests](https://img.shields.io/badge/Tests-Jest%20%F0%9F%8E%AF-brightgreen)
+![License](https://img.shields.io/badge/License-ISC-blue)
+
 A production-ready Expense Tracker platform featuring a secure Express/Node.js API with MongoDB, optional PostgreSQL integration, Redis caching, WebSockets (Socket.IO), and a React client. Designed for local development, Dockerized environments, and PM2-managed deployments.
 
-## Quick Start
+---
 
-- Prerequisites: Node.js 18+, npm, Docker (optional), Git
-- Clone and install:
-  - Backend: `npm install`
-  - Frontend: `npm install --prefix client`
-- Run backend (dev): `npm run dev`
-- Run client (dev): `npm run client`
-- Run both (dev): `npm run dev:all`
-- API default URL: `http://localhost:5000`
-- Client default URL: `http://localhost:3000`
+## Table of Contents
+
+1. [Features](#features)
+2. [Architecture](#architecture)
+3. [Quick Start](#quick-start)
+4. [Screenshots](#screenshots)
+5. [Repository Layout](#repository-layout)
+6. [Project Structure](#project-structure)
+7. [Environment Variables](#environment-variables)
+8. [Scripts](#scripts)
+9. [Running Locally](#running-locally)
+10. [Docker](#docker)
+11. [API Overview](#api-overview)
+12. [WebSocket Events](#websocket-events)
+13. [Testing](#testing)
+14. [Production](#production)
+15. [Troubleshooting](#troubleshooting)
+16. [License](#license)
+17. [About the Developer](#-about-the-developer)
+18. [Contact](#-contact)
+
+## Architecture
+
+```mermaid
+flowchart LR
+  A[React Client (3000)] -- CORS/API --> B(Express API 5000)
+  B -- Mongoose --> C[(MongoDB)]
+  B -- Pool --> D[(PostgreSQL)]
+  B -- Cache --> E[(Redis)]
+  B <-- WebSocket --> F{{Socket.IO}}
+  B -- Views --> G[[EJS + Public Assets]]
+```
 
 ## Features
 
@@ -26,7 +59,22 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 - Docker: Compose files for production and development
 - Process manager: PM2 via `ecosystem.config.js`
 
+## Quick Start
+
+- Prerequisites: Node.js 18+, npm, Docker (optional), Git
+- Clone and install:
+  - Backend: `npm install`
+  - Frontend: `npm install --prefix client`
+- Run backend (dev): `npm run dev`
+- Run client (dev): `npm run client`
+- Run both (dev): `npm run dev:all`
+- API default URL: `http://localhost:5000`
+- Client default URL: `http://localhost:3000`
+
 ## Screenshots
+
+<details>
+<summary><b>Click to expand gallery</b></summary>
 
 A quick visual tour of the app. Each screenshot is indexed and captioned for clarity.
 
@@ -66,6 +114,16 @@ A quick visual tour of the app. Each screenshot is indexed and captioned for cla
 
 ![09 – MongoDB Data](pics/data%20saved%20in%20mongodb.png)
 
+10) **Creating Category (Form)** — _Inline form with validations_
+
+![10 – Creating Category](pics/creating%20category.png)
+
+11) **Creating Expense (Form)** — _Inline form with validations_
+
+![11 – Creating Expense](pics/creating%20expense.png)
+
+</details>
+
 ## Repository Layout
 
 - API server entry: [server.js](server.js)
@@ -82,6 +140,9 @@ A quick visual tour of the app. Each screenshot is indexed and captioned for cla
 - Tests: [tests](tests)
 
 ## Project Structure
+
+<details>
+<summary><b>Click to view annotated tree</b></summary>
 
 ```
 ExpenseTrackerAPI/
@@ -202,6 +263,8 @@ ExpenseTrackerAPI/
 └── views/                             # EJS templates for server-rendered pages
   └── index.ejs
 ```
+
+</details>
 
 ## Environment Variables
 
