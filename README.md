@@ -66,9 +66,6 @@ A production-ready Expense Tracker platform featuring a secure Express/Node.js A
 
 ## Screenshots
 
-<details>
-<summary><b>Click to expand gallery</b></summary>
-
 A quick visual tour of the app. Each screenshot is indexed and captioned for clarity.
 
 1) **Login** — _Authenticate with email/password_
@@ -115,7 +112,7 @@ A quick visual tour of the app. Each screenshot is indexed and captioned for cla
 
 ![11 – Creating Expense](pics/creating%20expense.png)
 
-</details>
+<!-- Gallery always visible -->
 
 ## Repository Layout
 
@@ -133,9 +130,7 @@ A quick visual tour of the app. Each screenshot is indexed and captioned for cla
 - Tests: [tests](tests)
 
 ## Project Structure
-
-<details>
-<summary><b>Click to view annotated tree</b></summary>
+<!-- Annotated tree always visible -->
 
 ```
 ExpenseTrackerAPI/
@@ -257,7 +252,7 @@ ExpenseTrackerAPI/
   └── index.ejs
 ```
 
-</details>
+
 
 ## Environment Variables
 
